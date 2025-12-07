@@ -18,7 +18,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: ./frontend/Dockerfile.dev
     ports:
       - "3000:3000"
     environment:
@@ -33,6 +33,23 @@ services:
       db:
         condition: service_healthy
 
+  backend:
+    image: golang:1.23-bookworm
+    working_dir: /app
+    command: ["bash", "-c", "go mod download && go run ./main.go"]
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: "postgres://app:app_password@db:5432/appdb"
+      # ALLOWED_ORIGIN: "http://localhost:3000"
+    volumes:
+      - ./backend:/app
+      - go_mod_cache:/go/pkg/mod
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   pg_dev:
   node_modules_dev:
+  go_mod_cache:

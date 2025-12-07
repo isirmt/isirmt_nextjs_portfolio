@@ -46,3 +46,5 @@ next-env.d.ts
 /frontend/.pnpm-store
 
 Caddyfile
+
+.gopath
