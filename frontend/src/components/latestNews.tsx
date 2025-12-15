@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -6,20 +6,20 @@ import { useEffect, useState } from "react";
 import { delaGothicOne } from "@/lib/fonts";
 
 type Options = {
-  feedUrl: string,
-}
+  feedUrl: string;
+};
 
 type SiteOptions = {
   siteUrl: string;
   siteName: string;
   siteDescription: string;
   siteImagePath: string;
-}
+};
 
 type FeedData = {
-  title: string,
-  link: string
-}
+  title: string;
+  link: string;
+};
 
 export function LatestNews({ feedUrl }: Options) {
   const [feedData, setFeedData] = useState<FeedData>();
@@ -51,25 +51,49 @@ export function LatestNews({ feedUrl }: Options) {
     return () => {
       isMounted = false;
     };
-  }, [feedUrl])
+  }, [feedUrl]);
 
-  return <div className="">
-    {feedData?.title ? <Link href={feedData.link}>{feedData.title}</Link> : <div>データ取得に失敗しました&nbsp;&gt;&lt;</div>}
-  </div>
+  return (
+    <div className="">
+      {feedData?.title ? (
+        <Link href={feedData.link}>{feedData.title}</Link>
+      ) : (
+        <div>データ取得に失敗しました&nbsp;&gt;&lt;</div>
+      )}
+    </div>
+  );
 }
 
-export function InformationSite({ siteUrl, feedUrl, siteName, siteImagePath, siteDescription }: SiteOptions & Options) {
-  return <div className="flex flex-col gap-2.5">
-    <Link href={siteUrl} target="_blank" rel="noopener" className="flex flex-col gap-2.5" >
-      <div className="aspect-1200/630 w-96 rounded-lg overflow-hidden">
-        <Image src={siteImagePath} width={1200} height={630} alt={siteName + "_thumbnail"} />
+export function InformationSite({
+  siteUrl,
+  feedUrl,
+  siteName,
+  siteImagePath,
+  siteDescription,
+}: SiteOptions & Options) {
+  return (
+    <div className="flex flex-col gap-2.5">
+      <Link
+        href={siteUrl}
+        target="_blank"
+        rel="noopener"
+        className="flex flex-col gap-2.5"
+      >
+        <div className="aspect-1200/630 w-96 overflow-hidden rounded-lg">
+          <Image
+            src={siteImagePath}
+            width={1200}
+            height={630}
+            alt={siteName + "_thumbnail"}
+          />
+        </div>
+        <div className={`text-xl ${delaGothicOne.className}`}>{siteName}</div>
+        <div className="font-bold">{siteDescription}</div>
+      </Link>
+      <div className={`text-center text-lg ${delaGothicOne.className}`}>
+        新着情報
       </div>
-      <div className={`text-xl ${delaGothicOne.className}`}>{siteName}</div>
-      <div className="font-bold">
-        {siteDescription}
-      </div>
-    </Link>
-    <div className={`text-lg text-center ${delaGothicOne.className}`}>新着情報</div>
-    <LatestNews feedUrl={feedUrl} />
-  </div>
+      <LatestNews feedUrl={feedUrl} />
+    </div>
+  );
 }

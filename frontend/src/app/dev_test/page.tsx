@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
 import { backendBaseUrl } from "@/lib/config";
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 
 export default function ClientPage() {
   const [serverStatus, setServerStatus] = useState<number>();
@@ -9,17 +9,15 @@ export default function ClientPage() {
     const getResponse = async () => {
       try {
         const response = await fetch(`${backendBaseUrl}/healthz`);
-        setServerStatus(response.status)
+        setServerStatus(response.status);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
-        setServerStatus(500)
+        setServerStatus(500);
       }
-    }
+    };
 
-    getResponse()
-  }, [])
+    getResponse();
+  }, []);
 
-  return <main>
-    Status: {serverStatus}
-  </main>
+  return <main>Status: {serverStatus}</main>;
 }

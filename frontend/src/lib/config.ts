@@ -1,1 +1,2 @@
-export const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL ?? "http://localhost:4000";
+export const backendBaseUrl =
+  process.env.NEXT_PUBLIC_BACKEND_BASE_URL ?? "http://localhost:4000";
