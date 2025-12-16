@@ -7,7 +7,7 @@ export default function SessionButton() {
 
   if (status === "loading") {
     return (
-      <button type="button" disabled>
+      <button className="cursor-pointer" type="button" disabled>
         認証確認中
       </button>
     );
@@ -15,7 +15,11 @@ export default function SessionButton() {
 
   if (status === "authenticated") {
     return (
-      <button type="button" onClick={() => signOut({ callbackUrl: "/" })}>
+      <button
+        className="cursor-pointer"
+        type="button"
+        onClick={() => signOut({ callbackUrl: "/" })}
+      >
         ログアウト
       </button>
     );
@@ -24,6 +28,7 @@ export default function SessionButton() {
   return (
     <button
       type="button"
+      className="cursor-pointer"
       onClick={() => signIn("google", { callbackUrl: "/admin" })}
     >
       Googleでログイン
