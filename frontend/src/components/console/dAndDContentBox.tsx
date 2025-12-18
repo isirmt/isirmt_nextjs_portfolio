@@ -1,66 +1,151 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 type FileUploadingState = {
-  file: File,
-  status: "pending" | "uploading" | "success" | "error"
-}
+  id: string;
+  file: File;
+  status: "pending" | "uploading" | "success" | "error";
+  errorMessage?: string;
+};
 
 export default function DAndDContentBox() {
   const inputtingFileButtonRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [fileUploadingStates, setFileUploadingStates] = useState<FileUploadingState[]>([]);
+  const [fileUploadingStates, setFileUploadingStates] = useState<
+    FileUploadingState[]
+  >([]);
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLInputElement>) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
+    e.dataTransfer.dropEffect = "copy";
     setIsDragging(true);
-  }, [])
+  }, []);
 
   const handleDragLeave = useCallback(() => {
     setIsDragging(false);
-  }, [])
+  }, []);
 
-  const handleFiles = useCallback((files: FileList | File[]) => {
-    const additionalFileUploadingStates: FileUploadingState[] = []
-    Array.from(files).forEach((item) => {
-      additionalFileUploadingStates.push({
-        file: item,
-        status: "pending"
-      })
-    });
-    setFileUploadingStates([...fileUploadingStates, ...additionalFileUploadingStates]);
-  }, [fileUploadingStates])
+  const uploadFile = useCallback(async (id: string, file: File) => {
+    setFileUploadingStates((prev) =>
+      prev.map((state) =>
+        state.id === id ? { ...state, status: "uploading" } : state,
+      ),
+    );
 
-  const handleDrop = useCallback((e: React.DragEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (e.dataTransfer.files?.length) {
-      handleFiles(e.dataTransfer.files);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/images", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok)
+        setFileUploadingStates((prev) =>
+          prev.map((state) =>
+            state.id === id ? { ...state, status: "success" } : state,
+          ),
+        );
+      else
+        setFileUploadingStates((prev) =>
+          prev.map((state) =>
+            state.id === id
+              ? {
+                  ...state,
+                  status: "error",
+                  errorMessage: "アップロードに失敗",
+                }
+              : state,
+          ),
+        );
+    } catch (error) {
+      setFileUploadingStates((prev) =>
+        prev.map((state) =>
+          state.id === id
+            ? {
+                ...state,
+                status: "error",
+                errorMessage:
+                  error instanceof Error ? error.message : "アップロードに失敗",
+              }
+            : state,
+        ),
+      );
     }
-  }, [handleFiles])
+  }, []);
+
+  const handleFiles = useCallback(
+    (files: FileList | File[]) => {
+      const newStates: FileUploadingState[] = Array.from(files).map(
+        (file, index) => ({
+          id: `${Date.now()}-${index}-${file.name}`,
+          file,
+          status: "pending",
+          errorMessage: undefined,
+        }),
+      );
+
+      setFileUploadingStates((prev) => {
+        return [...prev, ...newStates];
+      });
+
+      newStates.forEach(({ id, file }) => {
+        uploadFile(id, file);
+      });
+    },
+    [uploadFile],
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      setIsDragging(false);
+      if (e.dataTransfer.files?.length) {
+        handleFiles(e.dataTransfer.files);
+      }
+    },
+    [handleFiles],
+  );
+
+  const handleSelectingFiles = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files?.length) {
+        handleFiles(e.target.files);
+        e.target.value = "";
+      }
+    },
+    [handleFiles],
+  );
+
+  useEffect(() => {
+    console.log(fileUploadingStates);
+  }, [fileUploadingStates]);
 
   return (
-    <section className="w-full relative flex-col flex px-16 space-y-4">
+    <section className="relative flex w-full flex-col space-y-4 px-16">
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`w-full select-none flex flex-col gap-3 justify-center items-center text-[#7e11d1] font-semibold px-6 py-3 transition-all duration-200 ${isDragging ? "bg-[#dcbff3]" : "bg-[#f6eaff]"}`}
+        className={`flex w-full flex-col items-center justify-center gap-3 px-6 py-3 font-semibold text-[#7e11d1] transition-all duration-200 select-none ${isDragging ? "bg-[#dcbff3]" : "bg-[#f6eaff]"}`}
       >
         <div className="text-3xl">画像登録</div>
-        <div className="items-center flex justify-center gap-3">
-          <div className="border-2 text-center leading-none border-dotted size-30 text-2xl flex items-center justify-center">
-            ドラッグ<br />&<br />ドロップ
+        <div className="flex items-center justify-center gap-3">
+          <div className="flex size-30 items-center justify-center border-2 border-dotted text-center text-2xl leading-none">
+            ドラッグ
+            <br />&<br />
+            ドロップ
           </div>
-          <div>
-            または
-          </div>
+          <div>または</div>
           <button
             onClick={() => inputtingFileButtonRef.current?.click()}
-            className="border-2 text-center leading-none border-dotted size-30 text-2xl flex items-center justify-center transition-all duration-200 cursor-pointer hover:bg-[#dcbff3]">
-            ファイルを<br />選択
+            className="flex size-30 cursor-pointer items-center justify-center border-2 border-dotted text-center text-2xl leading-none transition-all duration-200 hover:bg-[#dcbff3]"
+          >
+            ファイルを
+            <br />
+            選択
           </button>
           <input
             type="file"
@@ -68,6 +153,7 @@ export default function DAndDContentBox() {
             accept="image/*"
             multiple
             ref={inputtingFileButtonRef}
+            onChange={handleSelectingFiles}
           />
         </div>
       </div>

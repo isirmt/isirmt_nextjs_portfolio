@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 	"os"
 	"realtime/internal/query"
@@ -97,6 +98,22 @@ func (pSrv *server) handleGetImages(c echo.Context) error {
 }
 
 func (pSrv *server) handleUploadImage(c echo.Context) error {
+	// todo: ポスグレに保存するようにする
+	fileHeader, err := c.FormFile("file")
+	if err != nil {
+		return c.String(400, "file is required")
+	}
+
+	src, err := fileHeader.Open()
+	if err != nil {
+		return c.String(500, "failed to open file")
+	}
+	defer src.Close()
+
+	if _, err := io.Copy(io.Discard, src); err != nil {
+		return c.String(500, "failed to read file")
+	}
+
 	return c.String(200, "ok")
 }
 

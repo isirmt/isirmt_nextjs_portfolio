@@ -9,7 +9,9 @@ export default async function ImagesConsolePage() {
     redirect("/console/login");
   }
 
-  return <main className="w-full relative">
-    <DAndDContentBox />
-  </main>;
+  return (
+    <main className="relative w-full">
+      <DAndDContentBox />
+    </main>
+  );
 }
