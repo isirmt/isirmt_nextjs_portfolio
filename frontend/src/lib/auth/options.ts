@@ -28,6 +28,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     },
   },
   pages: {
-    signIn: "/admin/login",
+    signIn: "/console/login",
   },
 });

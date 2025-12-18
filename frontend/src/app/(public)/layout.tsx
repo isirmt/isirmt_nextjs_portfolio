@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { notoSansJp } from "@/lib/fonts";
 import Footer from "@/components/footer";
+import React from "react";
 
 export const metadata: Metadata = {
   title: "isirmt(入本 聖也)",
@@ -13,11 +13,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
-      <body className={`${notoSansJp.variable} antialiased`}>
-        {children}
-        <Footer />
-      </body>
-    </html>
+    <React.Fragment>
+      {children}
+      <Footer />
+    </React.Fragment>
   );
 }

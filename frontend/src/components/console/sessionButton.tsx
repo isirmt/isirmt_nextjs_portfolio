@@ -29,7 +29,7 @@ export default function SessionButton() {
     <button
       type="button"
       className="cursor-pointer"
-      onClick={() => signIn("google", { callbackUrl: "/admin" })}
+      onClick={() => signIn("google", { callbackUrl: "/console" })}
     >
       Googleでログイン
     </button>

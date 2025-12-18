@@ -3,16 +3,16 @@ import type { NextAuthRequest } from "next-auth";
 import { auth } from "./lib/auth/options";
 import { isAllowedEmail } from "./lib/auth/allowedEmails";
 
-const PUBLIC_ADMIN_PATHS = ["/admin/login", "/admin/guest"];
+const PUBLIC_CONSOLE_PATHS = ["/console/login", "/console/guest"];
 
 const proxy = auth((request: NextAuthRequest) => {
   const { pathname } = request.nextUrl;
 
-  if (!pathname.startsWith("/admin")) {
+  if (!pathname.startsWith("/console")) {
     return NextResponse.next();
   }
 
-  if (PUBLIC_ADMIN_PATHS.some((path) => pathname.startsWith(path))) {
+  if (PUBLIC_CONSOLE_PATHS.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
   }
 
@@ -21,7 +21,7 @@ const proxy = auth((request: NextAuthRequest) => {
     return NextResponse.next();
   }
 
-  const signInUrl = new URL("/admin/login", request.url);
+  const signInUrl = new URL("/console/login", request.url);
   signInUrl.searchParams.set("callbackUrl", request.url);
   return NextResponse.redirect(signInUrl);
 });
@@ -29,5 +29,5 @@ const proxy = auth((request: NextAuthRequest) => {
 export default proxy;
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/console/:path*"],
 };

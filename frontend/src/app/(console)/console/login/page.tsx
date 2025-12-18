@@ -1,12 +1,12 @@
-import SessionButton from "@/components/admin/sessionButton";
+import SessionButton from "@/components/console/sessionButton";
 import { auth } from "@/lib/auth/options";
 import { redirect } from "next/navigation";
 
-export default async function AdminLoginPage() {
+export default async function ConsoleLoginPage() {
   const session = await auth();
 
   if (session) {
-    redirect("/admin");
+    redirect("/console");
   }
 
   return (

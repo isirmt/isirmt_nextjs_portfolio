@@ -1,5 +1,6 @@
 import { delaGothicOne } from "@/lib/fonts";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -15,10 +16,22 @@ export default function Home() {
       <nav className="sticky top-0 z-50 -mt-20 h-20 w-full bg-gray-200/80">
         <ul className="font-dot flex h-full w-full items-center justify-start gap-6 px-10 tracking-wide">
           <li>
-            <a className="inline-flex flex-col items-center justify-center">
+            <Link
+              href={`/`}
+              className="inline-flex flex-col items-center justify-center"
+            >
               <div className="text-2xl leading-none">Profile</div>
               <div className="text-sm leading-none">プロフィール</div>
-            </a>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href={`/console`}
+              className="inline-flex flex-col items-center justify-center"
+            >
+              <div className="text-2xl leading-none">Console</div>
+              <div className="text-sm leading-none">コンソール</div>
+            </Link>
           </li>
         </ul>
       </nav>
