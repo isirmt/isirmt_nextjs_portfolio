@@ -35,7 +35,12 @@ services:
   backend:
     image: golang:1.23-bookworm
     working_dir: /app
-    command: ["bash", "-c", "go mod download && go run ./main.go"]
+    command:
+      [
+        "bash",
+        "-c",
+        "go mod download && go install github.com/air-verse/air@v1.52.3 && air -c .air.toml",
+      ]
     environment:
       DATABASE_URL: "postgres://app:app_password@db:5432/appdb"
       ALLOWED_ORIGIN: "http://localhost:3000"
