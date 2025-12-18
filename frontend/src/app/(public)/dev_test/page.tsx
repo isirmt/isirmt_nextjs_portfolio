@@ -1,6 +1,5 @@
 "use client";
 
-import { backendBaseUrl } from "@/lib/config";
 import { useEffect, useState } from "react";
 
 export default function ClientPage() {
@@ -8,7 +7,7 @@ export default function ClientPage() {
   useEffect(() => {
     const getResponse = async () => {
       try {
-        const response = await fetch(`${backendBaseUrl}/healthz`);
+        const response = await fetch(`/api/healthz`);
         setServerStatus(response.status);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {

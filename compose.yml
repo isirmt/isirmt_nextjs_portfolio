@@ -24,6 +24,7 @@ services:
       PORT: "3000"
       HOSTNAME: "0.0.0.0"
       DATABASE_URL: ${DATABASE_URL}
+      NEXT_PUBLIC_BACKEND_BASE_URL: ${NEXT_PUBLIC_BACKEND_BASE_URL}
     depends_on:
       db:
         condition: service_healthy
@@ -35,6 +36,7 @@ services:
       dockerfile: Dockerfile
     environment:
       DATABASE_URL: ${DATABASE_URL}
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
     restart: unless-stopped
     depends_on:
       db:
@@ -51,7 +53,10 @@ services:
       - caddy_config:/config
     restart: unless-stopped
     depends_on:
-      - web
+      web:
+        condition: service_started
+      backend:
+        condition: service_started
 
 volumes:
   pg_prod:
