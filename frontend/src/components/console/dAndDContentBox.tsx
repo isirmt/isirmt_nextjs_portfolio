@@ -1,5 +1,6 @@
 "use client";
 
+import backendFetch from "@/lib/auth/backendFetch";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 type FileUploadingState = {
@@ -37,7 +38,7 @@ export default function DAndDContentBox() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("/api/images", {
+      const response = await backendFetch("/images", {
         method: "POST",
         body: formData,
       });
@@ -129,7 +130,7 @@ export default function DAndDContentBox() {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`flex w-full border-2 border-dotted flex-col items-center justify-center gap-3 px-6 py-3 font-semibold text-[#7e11d1] transition-all duration-200 select-none ${isDragging ? "bg-[#dcbff3]" : "bg-[#f6eaff]"}`}
+        className={`flex w-full flex-col items-center justify-center gap-3 border-2 border-dotted px-6 py-3 font-semibold text-[#7e11d1] transition-all duration-200 select-none ${isDragging ? "bg-[#dcbff3]" : "bg-[#f6eaff]"}`}
       >
         <div className="text-3xl">画像登録</div>
         <div className="flex items-center justify-center gap-3">

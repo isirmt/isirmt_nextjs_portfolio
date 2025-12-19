@@ -11,7 +11,7 @@ export default async function ImagesConsolePage() {
   }
 
   return (
-    <main className="relative w-full space-y-8 py-8 px-16">
+    <main className="relative w-full space-y-8 px-16 py-8">
       <DAndDContentBox />
       <ImagesViewer />
     </main>
