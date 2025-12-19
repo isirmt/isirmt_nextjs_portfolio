@@ -5,8 +5,11 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"realtime/internal/query"
+	"realtime/internal/query/model"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/driver/postgres"
@@ -98,7 +101,6 @@ func (pSrv *server) handleGetImages(c echo.Context) error {
 }
 
 func (pSrv *server) handleUploadImage(c echo.Context) error {
-	// todo: ポスグレに保存するようにする
 	fileHeader, err := c.FormFile("file")
 	if err != nil {
 		return c.String(400, "file is required")
@@ -110,11 +112,44 @@ func (pSrv *server) handleUploadImage(c echo.Context) error {
 	}
 	defer src.Close()
 
-	if _, err := io.Copy(io.Discard, src); err != nil {
-		return c.String(500, "failed to read file")
+	imageId, err := uuid.NewRandom()
+	if err != nil {
+		return c.String(500, "failed to generate image id")
 	}
 
-	return c.String(200, "ok")
+	idStr := imageId.String()
+
+	storageName := idStr + filepath.Ext(fileHeader.Filename)
+	dstPath := filepath.Join(pSrv.uploadDir, storageName)
+	dst, err := os.Create(dstPath)
+	if err != nil {
+		return c.String(500, "failed to create file")
+	}
+	defer dst.Close()
+
+	size, err := io.Copy(dst, src)
+	if err != nil {
+		return c.String(500, "failed to save file")
+	}
+
+	if _, err := dst.Seek(0, io.SeekStart); err != nil {
+		return c.String(500, "failed to read saved file")
+	}
+
+	_ = dst.Sync()
+
+	newImage := &model.CommonImage{
+		ID:       &idStr,
+		FileName: fileHeader.Filename,
+		FilePath: storageName,
+		MimeType: fileHeader.Header.Get("Content-Type"),
+		FileSize: size,
+	}
+	if err := pSrv.q.CommonImage.WithContext(c.Request().Context()).Create(newImage); err != nil {
+		return c.String(500, "failed to save image info")
+	}
+
+	return c.JSON(200, newImage)
 }
 
 func (pSrv *server) handleServeImage(c echo.Context) error {

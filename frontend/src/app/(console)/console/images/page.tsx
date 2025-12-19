@@ -1,4 +1,5 @@
 import DAndDContentBox from "@/components/console/dAndDContentBox";
+import ImagesViewer from "@/components/console/imagesViewer";
 import { auth } from "@/lib/auth/options";
 import { redirect } from "next/navigation";
 
@@ -10,8 +11,9 @@ export default async function ImagesConsolePage() {
   }
 
   return (
-    <main className="relative w-full">
+    <main className="relative w-full space-y-8 py-8 px-16">
       <DAndDContentBox />
+      <ImagesViewer />
     </main>
   );
 }

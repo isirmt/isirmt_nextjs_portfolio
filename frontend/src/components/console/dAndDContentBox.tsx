@@ -124,12 +124,12 @@ export default function DAndDContentBox() {
   }, [fileUploadingStates]);
 
   return (
-    <section className="relative flex w-full flex-col space-y-4 px-16">
+    <section className="relative flex w-full flex-col space-y-4">
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`flex w-full flex-col items-center justify-center gap-3 px-6 py-3 font-semibold text-[#7e11d1] transition-all duration-200 select-none ${isDragging ? "bg-[#dcbff3]" : "bg-[#f6eaff]"}`}
+        className={`flex w-full border-2 border-dotted flex-col items-center justify-center gap-3 px-6 py-3 font-semibold text-[#7e11d1] transition-all duration-200 select-none ${isDragging ? "bg-[#dcbff3]" : "bg-[#f6eaff]"}`}
       >
         <div className="text-3xl">画像登録</div>
         <div className="flex items-center justify-center gap-3">
