@@ -14,6 +14,8 @@ async function proxy(request: Request) {
   if (!session) return new Response("Unauthorized", { status: 401 });
   if (!apiUrl)
     return new Response("parameter(api_url) is required", { status: 400 });
+  if (apiUrl.startsWith("http://") || apiUrl.startsWith("https://"))
+    return new Response("parameter(api_url) must be a relative path", { status: 400 });
   if (!isAllowedEmail(session.user?.email))
     return new Response("Forbidden", { status: 403 });
 
