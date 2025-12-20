@@ -1,12 +1,6 @@
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth/options";
+import sessionChecker from "@/lib/console/sessionChecker";
 
 export default async function HomeConsole() {
-  const session = await auth();
-
-  if (!session) {
-    redirect("/console/login");
-  }
-
+  await sessionChecker();
   return <main>Console Page</main>;
 }

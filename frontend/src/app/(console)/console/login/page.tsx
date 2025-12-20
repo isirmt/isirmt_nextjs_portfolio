@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 
 export default async function ConsoleLoginPage() {
   const session = await auth();
-
   if (session) {
     redirect("/console");
   }
