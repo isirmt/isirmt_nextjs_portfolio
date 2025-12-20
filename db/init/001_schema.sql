@@ -44,6 +44,18 @@ CREATE TABLE
         CONSTRAINT uq_isirmt_work_images_work_order UNIQUE (work_id, display_order)
     );
 
+/* 作品の関連URL格納 */
+CREATE TABLE
+    IF NOT EXISTS isirmt_work_urls (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+        work_id UUID NOT NULL REFERENCES isirmt_works (id) ON DELETE CASCADE,
+        url TEXT NOT NULL,
+        label TEXT NOT NULL,
+        display_order INT NOT NULL,
+        CHECK (display_order >= 0),
+        CONSTRAINT uq_isirmt_work_urls_work_order UNIQUE (work_id, display_order)
+    );
+
 /* 作品と技術スタックの関連付け情報格納 */
 CREATE TABLE
     IF NOT EXISTS isirmt_work_tech_stacks (
