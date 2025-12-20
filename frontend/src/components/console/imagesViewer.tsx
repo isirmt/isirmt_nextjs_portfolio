@@ -1,27 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { CommonImage } from "@/types/images/common";
-import { useEffect, useState } from "react";
+import { useImagesContext } from "@/contexts/ImagesContext";
 
 export default function ImagesViewer() {
-  const [images, setImages] = useState<CommonImage[]>([]);
-
-  useEffect(() => {
-    const fetchImages = async () => {
-      const response = await fetch("/api/images");
-      const parsedImages = (await response.json()) as CommonImage[];
-      setImages(parsedImages);
-    };
-
-    fetchImages();
-  }, []);
+  const { images, isLoading, error } = useImagesContext();
 
   return (
     <section className="bg-[#f8f8f8] px-4 py-4">
+      <div className="mb-4 flex items-center gap-4">
+        <p className="font-semibold text-[#7e11d1]">登録済み画像</p>
+        {isLoading && <span className="text-sm text-gray-500">読み込み中...</span>}
+        {error && <span className="text-sm text-[#e04787]">{error}</span>}
+      </div>
       <div className="flex flex-wrap gap-4">
-        {images.map((image, imageIdx) => (
-          <button className="relative size-48 bg-white" key={imageIdx}>
+        {images.map((image) => (
+          <button className="relative size-48 bg-white" key={image.id}>
             <img
               src={`/api/images/${image.id}`}
               alt={image.file_name}

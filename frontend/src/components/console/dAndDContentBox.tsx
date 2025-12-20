@@ -2,15 +2,17 @@
 
 import { useEffect } from "react";
 import { useDragAndDropUploader } from "@/hooks/useDragAndDropUploader";
+import { useImagesContext } from "@/contexts/ImagesContext";
 
 export default function DAndDContentBox() {
+  const { refreshImages } = useImagesContext();
   const {
     isDragging,
     dragProps,
     fileInputProps,
     openFileDialog,
     fileUploadingStates,
-  } = useDragAndDropUploader();
+  } = useDragAndDropUploader({ onUploadSuccess: refreshImages });
 
   useEffect(() => {
     console.log(fileUploadingStates);

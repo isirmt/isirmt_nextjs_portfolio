@@ -12,10 +12,12 @@ export type FileUploadingState = {
 
 export type UseDragAndDropUploaderOptions = {
   multiple?: boolean;
+  onUploadSuccess?: () => void | Promise<void>;
 };
 
 export function useDragAndDropUploader({
   multiple = true,
+  onUploadSuccess,
 }: UseDragAndDropUploaderOptions = {}) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -58,6 +60,7 @@ export function useDragAndDropUploader({
           state.id === id ? { ...state, status: "success" } : state,
         ),
       );
+      await onUploadSuccess?.();
     } catch (error) {
       setFileUploadingStates((prev) =>
         prev.map((state) =>
@@ -72,7 +75,7 @@ export function useDragAndDropUploader({
         ),
       );
     }
-  }, []);
+  }, [onUploadSuccess]);
 
   const enqueueUploads = useCallback(
     (files: FileList | File[]) => {

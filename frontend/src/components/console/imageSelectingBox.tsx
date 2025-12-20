@@ -1,7 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { CommonImage } from "@/types/images/common";
+import { useImagesContext } from "@/contexts/ImagesContext";
+import { useDragAndDropUploader } from "@/hooks/useDragAndDropUploader";
 import { useEffect, useState } from "react";
 
 type ImageSelectingBoxProps = {
@@ -13,26 +14,44 @@ export default function ImageSelectingBox({
   onChange,
   multiple,
 }: ImageSelectingBoxProps) {
-  const [images, setImages] = useState<CommonImage[]>([]);
+  const { images, refreshImages } = useImagesContext();
+  const {
+    isDragging,
+    dragProps,
+    fileInputProps,
+    openFileDialog,
+  } = useDragAndDropUploader({ onUploadSuccess: refreshImages });
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    const fetchImages = async () => {
-      const response = await fetch("/api/images");
-      const parsedImages = (await response.json()) as CommonImage[];
-      setImages(parsedImages);
-    };
-
-    fetchImages();
-  }, []);
 
   useEffect(() => {
     onChange(selectedIds);
   }, [onChange, selectedIds]);
 
   return (
-    <div className="relative flex w-full flex-col gap-4 bg-[#f8f8f8] p-4">
-      <p>{multiple ? "複数選択可能" : "一つを選択"}</p>
+    <div
+      {...dragProps}
+      className={`relative flex w-full flex-col gap-4 bg-[#f8f8f8] p-4`}
+    >
+      <div className={`pointer-events-none absolute z-10 flex items-center justify-center size-full top-0 left-0 border-2 border-dotted transition-all bg-[#dcbff3]/80 border-[#7e11d1] duration-200 ${isDragging ? "opacity-100" : "opacity-0"}`}>
+        <p className="text-[#7e11d1] text-4xl font-black">ドロップしてアップロード</p>
+      </div>
+      <div className="flex justify-between">
+        <div className="bg-[#054a5c] text-[#c6f4ff] px-2 py-0.5 font-bold rounded">{multiple ? "複数選択可能" : "一つを選択"}</div>
+        <div className="text-sm select-none flex gap-2 leading-none items-center">
+          <div>ドラッグ&ドロップでアップロード</div>
+          <div>または</div>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              openFileDialog();
+            }}
+            className="border-b hover:border-[#7e11d1] hover:text-[#7e11d1] cursor-pointer"
+          >
+            ファイルを選択
+          </button>
+          <input type="file" className="hidden" {...fileInputProps} />
+        </div>
+      </div>
       <div className="flex w-full flex-wrap gap-4">
         {images.map((image, imageIdx) => (
           <button
