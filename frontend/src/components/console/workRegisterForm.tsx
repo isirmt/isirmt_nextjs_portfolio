@@ -3,13 +3,17 @@
 import React, { useCallback, useState } from "react";
 import ImageSelectingBox from "./imageSelectingBox";
 
-const LabelBox = ({
-  children,
-  isLong,
-}: {
+type LabelBoxProps = {
   children: React.ReactNode;
   isLong?: boolean;
-}) => {
+};
+
+type LabelTextProps = {
+  children: React.ReactNode;
+  required?: boolean;
+};
+
+const LabelBox = ({ children, isLong }: LabelBoxProps) => {
   return (
     <div
       className={`flex flex-col gap-2 px-2 ${isLong ? "col-span-2" : "col-span-1"}`}
@@ -19,13 +23,7 @@ const LabelBox = ({
   );
 };
 
-const LabelText = ({
-  children,
-  required,
-}: {
-  children: React.ReactNode;
-  required?: boolean;
-}) => {
+const LabelText = ({ children, required }: LabelTextProps) => {
   return (
     <p className="flex gap-0.5 text-sm font-bold text-[#7e11d1]">
       {children}

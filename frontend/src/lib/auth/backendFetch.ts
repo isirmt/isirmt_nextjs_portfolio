@@ -1,4 +1,4 @@
-export default async function backendFetch(
+export default async function backendApi(
   backendEndpoint: string,
   init?: RequestInit | undefined,
 ): Promise<Response> {
