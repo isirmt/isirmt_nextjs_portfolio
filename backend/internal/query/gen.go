@@ -23,6 +23,7 @@ var (
 	IsirmtWorkClick     *isirmtWorkClick
 	IsirmtWorkImage     *isirmtWorkImage
 	IsirmtWorkTechStack *isirmtWorkTechStack
+	IsirmtWorkURL       *isirmtWorkURL
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
@@ -33,6 +34,7 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	IsirmtWorkClick = &Q.IsirmtWorkClick
 	IsirmtWorkImage = &Q.IsirmtWorkImage
 	IsirmtWorkTechStack = &Q.IsirmtWorkTechStack
+	IsirmtWorkURL = &Q.IsirmtWorkURL
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
@@ -44,6 +46,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		IsirmtWorkClick:     newIsirmtWorkClick(db, opts...),
 		IsirmtWorkImage:     newIsirmtWorkImage(db, opts...),
 		IsirmtWorkTechStack: newIsirmtWorkTechStack(db, opts...),
+		IsirmtWorkURL:       newIsirmtWorkURL(db, opts...),
 	}
 }
 
@@ -56,6 +59,7 @@ type Query struct {
 	IsirmtWorkClick     isirmtWorkClick
 	IsirmtWorkImage     isirmtWorkImage
 	IsirmtWorkTechStack isirmtWorkTechStack
+	IsirmtWorkURL       isirmtWorkURL
 }
 
 func (q *Query) Available() bool { return q.db != nil }
@@ -69,6 +73,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		IsirmtWorkClick:     q.IsirmtWorkClick.clone(db),
 		IsirmtWorkImage:     q.IsirmtWorkImage.clone(db),
 		IsirmtWorkTechStack: q.IsirmtWorkTechStack.clone(db),
+		IsirmtWorkURL:       q.IsirmtWorkURL.clone(db),
 	}
 }
 
@@ -89,6 +94,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		IsirmtWorkClick:     q.IsirmtWorkClick.replaceDB(db),
 		IsirmtWorkImage:     q.IsirmtWorkImage.replaceDB(db),
 		IsirmtWorkTechStack: q.IsirmtWorkTechStack.replaceDB(db),
+		IsirmtWorkURL:       q.IsirmtWorkURL.replaceDB(db),
 	}
 }
 
@@ -99,6 +105,7 @@ type queryCtx struct {
 	IsirmtWorkClick     IIsirmtWorkClickDo
 	IsirmtWorkImage     IIsirmtWorkImageDo
 	IsirmtWorkTechStack IIsirmtWorkTechStackDo
+	IsirmtWorkURL       IIsirmtWorkURLDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
@@ -109,6 +116,7 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		IsirmtWorkClick:     q.IsirmtWorkClick.WithContext(ctx),
 		IsirmtWorkImage:     q.IsirmtWorkImage.WithContext(ctx),
 		IsirmtWorkTechStack: q.IsirmtWorkTechStack.WithContext(ctx),
+		IsirmtWorkURL:       q.IsirmtWorkURL.WithContext(ctx),
 	}
 }
 

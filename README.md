@@ -33,7 +33,7 @@ docker compose -f compose.dev.yml run --rm backend bash -c "go mod tidy"
 if you update sql scheme, run this
 
 ```bash
-docker compose -f compose.dev.yml run --rm --user $(id -u):$(id -g) --env GOCACHE=/tmp/go-build backend bash -c "mkdir -p /tmp/go-build && go mod download && go run ./cmd/gen/main.go"
+docker compose -f compose.dev.yml run --rm --user $(id -u):$(id -g) --env GOCACHE=/tmp/go-build --env GOMODCACHE=/tmp/go-mod-cache backend bash -c "mkdir -p /tmp/go-build /tmp/go-mod-cache && go mod download && go run ./cmd/gen/main.go"
 ```
 
 ## for prod

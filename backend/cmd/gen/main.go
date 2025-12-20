@@ -37,6 +37,7 @@ func main() {
 		g.GenerateModel("common_tech_stacks"),
 		g.GenerateModel("isirmt_works"),
 		g.GenerateModel("isirmt_work_images"),
+		g.GenerateModel("isirmt_work_urls"),
 		g.GenerateModel("isirmt_work_tech_stacks"),
 		g.GenerateModel("isirmt_work_clicks"),
 	)
