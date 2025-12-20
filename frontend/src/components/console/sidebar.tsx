@@ -11,6 +11,9 @@ export default function ConsoleSidebar() {
             <Link href={`/console/`}>ホーム</Link>
           </li>
           <li>
+            <Link href={`/console/works`}>投稿管理</Link>
+          </li>
+          <li>
             <Link href={`/console/images`}>画像管理</Link>
           </li>
         </ul>

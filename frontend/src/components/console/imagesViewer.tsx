@@ -17,10 +17,6 @@ export default function ImagesViewer() {
     fetchImages();
   }, []);
 
-  useEffect(() => {
-    console.log(images);
-  }, [images]);
-
   return (
     <section className="bg-[#f8f8f8] px-4 py-4">
       <div className="flex flex-wrap gap-4">

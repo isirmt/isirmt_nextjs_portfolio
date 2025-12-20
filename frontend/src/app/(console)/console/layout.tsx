@@ -1,5 +1,5 @@
 import ConsoleSidebar from "@/components/console/sidebar";
-import ConsoleHeader from "@/components/adminHeader";
+import ConsoleHeader from "@/components/console/header";
 import ConsoleSessionProvider from "@/components/providers/consoleSessionProvider";
 
 export default async function ConsoleLayout({

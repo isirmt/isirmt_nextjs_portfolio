@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth/options";
-import SessionButton from "./console/sessionButton";
+import SessionButton from "./sessionButton";
 
 export default async function ConsoleHeader() {
   const session = await auth();

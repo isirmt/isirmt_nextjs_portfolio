@@ -14,6 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
+      <head>
+        <meta name="application-name" content="Folims" />
+      </head>
       <body className={`${notoSansJp.variable} antialiased`}>{children}</body>
     </html>
   );
