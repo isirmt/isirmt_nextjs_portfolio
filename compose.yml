@@ -25,6 +25,7 @@ services:
       HOSTNAME: "0.0.0.0"
       DATABASE_URL: ${DATABASE_URL}
       NEXT_PUBLIC_BACKEND_BASE_URL: ${NEXT_PUBLIC_BACKEND_BASE_URL}
+      ADMIN_SECRET: ${ADMIN_SECRET}
     depends_on:
       db:
         condition: service_healthy
@@ -37,6 +38,7 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
+      ADMIN_SECRET: ${ADMIN_SECRET}
     restart: unless-stopped
     depends_on:
       db:

@@ -25,6 +25,7 @@ services:
       HOSTNAME: "0.0.0.0"
       PORT: "3000"
       DATABASE_URL: "postgresql://app:app_password@db:5432/appdb"
+      ADMIN_SECRET: ${ADMIN_SECRET}
     volumes:
       - ./frontend:/app
       - node_modules_dev:/app/node_modules
@@ -44,6 +45,7 @@ services:
     environment:
       DATABASE_URL: "postgres://app:app_password@db:5432/appdb"
       ALLOWED_ORIGIN: "http://localhost:3000"
+      ADMIN_SECRET: ${ADMIN_SECRET}
     volumes:
       - ./backend:/app
       - go_mod_cache:/go/pkg/mod

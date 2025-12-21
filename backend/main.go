@@ -30,6 +30,7 @@ type server struct {
 	uploadDir     string
 	allowedOrigin string
 	maxUploadSize uint32
+	adminSecret   string
 }
 
 type createWorkURL struct {
@@ -90,12 +91,18 @@ func main() {
 		log.Fatalf("failed to create file dir. %v", err)
 	}
 
+	adminSecret := os.Getenv("ADMIN_SECRET")
+	if adminSecret == "" {
+		log.Fatalf("ADMIN_SECRET isn't set.")
+	}
+
 	pSrv := &server{
 		db:            gormDb,
 		q:             query.Use(gormDb),
 		uploadDir:     uploadDir,
 		allowedOrigin: os.Getenv("ALLOWED_ORIGIN"),
 		maxUploadSize: 20 << 20, // 20 MiB
+		adminSecret:   adminSecret,
 	}
 
 	router := echo.New()
@@ -107,15 +114,15 @@ func main() {
 	router.GET("/healthz", pSrv.handleHealth)
 	epImages := router.Group("/images")
 	epImages.GET("", pSrv.handleGetImages)
-	epImages.POST("", pSrv.handleUploadImage)
+	epImages.POST("", pSrv.requireAdmin(pSrv.handleUploadImage))
 	epImages.GET("/:id", pSrv.handleServeImage)
-	epImages.DELETE("/:id", pSrv.handleDeleteImage)
-	epImages.PUT("/:id", pSrv.handleUpdateImage)
+	epImages.DELETE("/:id", pSrv.requireAdmin(pSrv.handleDeleteImage))
+	epImages.PUT("/:id", pSrv.requireAdmin(pSrv.handleUpdateImage))
 	epTechStacks := router.Group("/tech-stacks")
 	epTechStacks.GET("", pSrv.handleGetTechStacks)
-	epTechStacks.POST("", pSrv.handleCreateTechStack)
+	epTechStacks.POST("", pSrv.requireAdmin(pSrv.handleCreateTechStack))
 	epWorks := router.Group("/works")
-	epWorks.POST("", pSrv.handleCreateWork)
+	epWorks.POST("", pSrv.requireAdmin(pSrv.handleCreateWork))
 
 	addr := getEnv("HOST", "0.0.0.0") + ":" + getEnv("PORT", "4000")
 	log.Printf("backend listening on %s", addr)
@@ -127,6 +134,16 @@ func main() {
 
 func (pSrv *server) handleHealth(c echo.Context) error {
 	return c.String(200, "ok")
+}
+
+func (pSrv *server) requireAdmin(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		secret := c.Request().Header.Get("X-Admin-Secret")
+		if secret == "" || secret != pSrv.adminSecret {
+			return c.String(http.StatusForbidden, "admin authentication failed")
+		}
+		return next(c)
+	}
 }
 
 func (pSrv *server) handleGetImages(c echo.Context) error {
