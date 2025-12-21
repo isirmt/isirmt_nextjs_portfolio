@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useDragAndDropUploader } from "@/hooks/useDragAndDropUploader";
-import { useImagesContext } from "@/contexts/ImagesContext";
+import { useImagesContext } from "@/contexts/imagesContext";
 
 export default function DAndDContentBox() {
   const { refreshImages } = useImagesContext();

@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useImagesContext } from "@/contexts/ImagesContext";
+import { useImagesContext } from "@/contexts/imagesContext";
 
 export default function ImagesViewer() {
   const { images, error } = useImagesContext();

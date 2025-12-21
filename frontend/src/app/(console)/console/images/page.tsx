@@ -1,6 +1,6 @@
 import DAndDContentBox from "@/components/console/dAndDContentBox";
 import ImagesViewer from "@/components/console/imagesViewer";
-import { ImagesProvider } from "@/contexts/ImagesContext";
+import { ImagesProvider } from "@/contexts/imagesContext";
 import sessionChecker from "@/lib/console/sessionChecker";
 
 export default async function ImagesConsolePage() {

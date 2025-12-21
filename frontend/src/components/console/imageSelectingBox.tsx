@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useImagesContext } from "@/contexts/ImagesContext";
+import { useImagesContext } from "@/contexts/imagesContext";
 import { useDragAndDropUploader } from "@/hooks/useDragAndDropUploader";
 import { useEffect, useState } from "react";
 
