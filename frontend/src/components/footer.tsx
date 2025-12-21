@@ -13,6 +13,7 @@ export default function Footer() {
     width: 0,
     height: 0,
   });
+  const spotlightSideRef = useRef<"left" | "right" | "none">("none");
 
   useEffect(() => {
     let isMounted = true;
@@ -44,20 +45,28 @@ export default function Footer() {
         };
 
         p.draw = () => {
-          p.background("#3e5289");
-          p.noStroke();
-          p.fill("#e7c127");
-          p.beginShape();
-          p.vertex(p.width / 2, p.height);
-          p.vertex(p.width / 2 - 50, 0);
-          p.vertex(0, 0);
-          p.vertex(0, p.height / 2);
-          p.endShape();
+          p.clear();
+          const spotlight = spotlightSideRef.current;
+          const gradientStrength = spotlight === "none" ? 0 : 1;
 
-          p.textAlign(p.CENTER, p.CENTER);
-          p.textSize(20);
-          p.fill(255);
-          p.text(`(${p.width},${p.height})`, p.width / 2, p.height / 2);
+          if (gradientStrength > 0) {
+            p.background("#3e5289");
+            p.noStroke();
+            p.fill("#e7c127");
+            p.beginShape();
+            if (spotlight === "left") {
+              p.vertex(p.width / 2, p.height);
+              p.vertex(p.width * 0.45, 0);
+              p.vertex(0, 0);
+              p.vertex(0, p.height / 2);
+            } else if (spotlight === "right") {
+              p.vertex(p.width / 2, p.height);
+              p.vertex(p.width * 0.55, 0);
+              p.vertex(p.width, 0);
+              p.vertex(p.width, p.height / 2);
+            }
+            p.endShape(p.CLOSE);
+          }
         };
       };
 
@@ -112,6 +121,14 @@ export default function Footer() {
     };
   }, []);
 
+  const handleSpotlightEnter = (side: "left" | "right") => {
+    spotlightSideRef.current = side;
+  };
+
+  const handleSpotlightLeave = () => {
+    spotlightSideRef.current = "none";
+  };
+
   return (
     <footer ref={footerRef} className="relative bg-[#67c8e6]">
       <div
@@ -123,21 +140,37 @@ export default function Footer() {
           <div className={`text-4xl text-white ${delaGothicOne.className}`}>
             情報発信中サイト
           </div>
-          <div className="my-10 flex gap-12 text-white">
-            <InformationSite
-              siteUrl="https://itomiri.com"
-              feedUrl="https://itomiri.com/feed"
-              siteName="井筒ミリ オフィシャルサイト"
-              siteImagePath="/itomiri_com_ogp.png"
-              siteDescription="「井筒ミリ」名義での活動を告知・紹介するサイト"
-            />
-            <InformationSite
-              siteUrl="https://blog.isirmt.com"
-              feedUrl="https://blog.isirmt.com/feed"
-              siteName="isirmt ブログ"
-              siteImagePath="/blog_isirmt_com_ogp.png"
-              siteDescription="「isirmt」名義で技術ブログを運用中"
-            />
+          <div className="my-10 flex gap-0 text-white">
+            <div
+              className="pr-6"
+              onMouseEnter={() => handleSpotlightEnter("left")}
+              onMouseLeave={handleSpotlightLeave}
+              onFocus={() => handleSpotlightEnter("left")}
+              onBlur={handleSpotlightLeave}
+            >
+              <InformationSite
+                siteUrl="https://itomiri.com"
+                feedUrl="https://itomiri.com/feed"
+                siteName="井筒ミリ オフィシャルサイト"
+                siteImagePath="/itomiri_com_ogp.png"
+                siteDescription="「井筒ミリ」名義での活動を告知・紹介するサイト"
+              />
+            </div>
+            <div
+              className="pl-6"
+              onMouseEnter={() => handleSpotlightEnter("right")}
+              onMouseLeave={handleSpotlightLeave}
+              onFocus={() => handleSpotlightEnter("right")}
+              onBlur={handleSpotlightLeave}
+            >
+              <InformationSite
+                siteUrl="https://blog.isirmt.com"
+                feedUrl="https://blog.isirmt.com/feed"
+                siteName="isirmt ブログ"
+                siteImagePath="/blog_isirmt_com_ogp.png"
+                siteDescription="「isirmt」名義で技術ブログを運用中"
+              />
+            </div>
           </div>
         </section>
         <div className="aspect-1235/110 bg-[url('/name_footer.svg')] bg-center bg-no-repeat" />
