@@ -9,6 +9,7 @@ import WorkUrlsInput, {
   WorkUrlItem,
   createEmptyWorkUrlItem,
 } from "./workUrlsInput";
+import { useWorksContext } from "@/contexts/worksContext";
 
 export default function WorkRegisterForm() {
   const [inputSlug, setInputSlug] = useState<string>("");
@@ -28,6 +29,7 @@ export default function WorkRegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const { refreshWorks } = useWorksContext();
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -80,6 +82,7 @@ export default function WorkRegisterForm() {
         }
 
         setSubmitSuccess("登録が完了しました");
+        await refreshWorks();
       } catch (error) {
         setSubmitError(
           error instanceof Error ? error.message : "登録に失敗しました",
@@ -99,6 +102,7 @@ export default function WorkRegisterForm() {
       inputTitle,
       inputUrls,
       inputWorkImages,
+      refreshWorks,
     ],
   );
 

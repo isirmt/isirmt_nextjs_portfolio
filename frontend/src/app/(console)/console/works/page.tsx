@@ -1,4 +1,5 @@
 import WorkRegisterForm from "@/components/console/workRegisterForm";
+import WorksViewer from "@/components/console/worksViewer";
 import { ImagesProvider } from "@/contexts/imagesContext";
 import { WorksProvider } from "@/contexts/worksContext";
 import sessionChecker from "@/lib/console/sessionChecker";
@@ -10,6 +11,7 @@ export default async function ImagesConsolePage() {
       <ImagesProvider>
         <WorksProvider>
           <WorkRegisterForm />
+          <WorksViewer />
         </WorksProvider>
       </ImagesProvider>
     </main>

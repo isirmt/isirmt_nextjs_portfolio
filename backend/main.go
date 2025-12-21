@@ -56,6 +56,39 @@ type createWorkRequest struct {
 	Urls             []createWorkURL `json:"urls"`
 }
 
+type workImageResponse struct {
+	ID           string `json:"id"`
+	ImageID      string `json:"image_id"`
+	DisplayOrder int    `json:"display_order"`
+}
+
+type workURLResponse struct {
+	ID           string `json:"id"`
+	URL          string `json:"url"`
+	Label        string `json:"label"`
+	DisplayOrder int    `json:"display_order"`
+}
+
+type workTechStackResponse struct {
+	ID          string `json:"id"`
+	TechStackID string `json:"tech_stack_id"`
+}
+
+type workResponse struct {
+	ID               string                  `json:"id"`
+	Slug             string                  `json:"slug"`
+	Title            string                  `json:"title"`
+	Comment          string                  `json:"comment"`
+	CreatedAt        string                  `json:"created_at"`
+	AccentColor      string                  `json:"accent_color"`
+	Description      *string                 `json:"description"`
+	IsPublic         bool                    `json:"is_public"`
+	ThumbnailImageID *string                 `json:"thumbnail_image_id"`
+	Images           []workImageResponse     `json:"images"`
+	Urls             []workURLResponse       `json:"urls"`
+	TechStacks       []workTechStackResponse `json:"tech_stacks"`
+}
+
 var hexColorPattern = regexp.MustCompile(`^#[0-9a-fA-F]{6}$`)
 
 func main() {
@@ -122,6 +155,7 @@ func main() {
 	epTechStacks.GET("", pSrv.handleGetTechStacks)
 	epTechStacks.POST("", pSrv.requireAdmin(pSrv.handleCreateTechStack))
 	epWorks := router.Group("/works")
+	epWorks.GET("", pSrv.handleGetWorks)
 	epWorks.POST("", pSrv.requireAdmin(pSrv.handleCreateWork))
 
 	addr := getEnv("HOST", "0.0.0.0") + ":" + getEnv("PORT", "4000")
@@ -282,9 +316,7 @@ func (pSrv *server) handleCreateTechStack(c echo.Context) error {
 		}
 	}
 	if logoImageID != nil {
-		_, err := pSrv.q.CommonImage.WithContext(ctx).
-			Where(pSrv.q.CommonImage.ID.Eq(*logoImageID)).
-			First()
+		_, err := pSrv.q.CommonImage.WithContext(ctx).Where(pSrv.q.CommonImage.ID.Eq(*logoImageID)).First()
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return c.String(400, "logo image not found")
@@ -303,6 +335,103 @@ func (pSrv *server) handleCreateTechStack(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, newStack)
+}
+
+func (pSrv *server) handleGetWorks(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	works, err := pSrv.q.IsirmtWork.WithContext(ctx).Order(pSrv.q.IsirmtWork.CreatedAt.Desc()).Find()
+	if err != nil {
+		return c.String(500, "failed to fetch works")
+	}
+
+	if len(works) == 0 {
+		return c.JSON(http.StatusOK, []workResponse{})
+	}
+
+	workIDs := make([]string, 0, len(works))
+	for _, work := range works {
+		workIDs = append(workIDs, *work.ID)
+	}
+
+	imagesMap := make(map[string][]workImageResponse, len(workIDs))
+	urlsMap := make(map[string][]workURLResponse, len(workIDs))
+	techMap := make(map[string][]workTechStackResponse, len(workIDs))
+
+	workImages, err := pSrv.q.IsirmtWorkImage.WithContext(ctx).Where(pSrv.q.IsirmtWorkImage.WorkID.In(workIDs...)).Order(pSrv.q.IsirmtWorkImage.WorkID, pSrv.q.IsirmtWorkImage.DisplayOrder).Find()
+	if err != nil {
+		return c.String(500, "failed to fetch work images")
+	}
+	for _, img := range workImages {
+		imagesMap[img.WorkID] = append(imagesMap[img.WorkID], workImageResponse{
+			ID:           *img.ID,
+			ImageID:      img.ImageID,
+			DisplayOrder: int(img.DisplayOrder),
+		})
+	}
+
+	workUrls, err := pSrv.q.IsirmtWorkURL.WithContext(ctx).Where(pSrv.q.IsirmtWorkURL.WorkID.In(workIDs...)).Order(pSrv.q.IsirmtWorkURL.WorkID, pSrv.q.IsirmtWorkURL.DisplayOrder).Find()
+	if err != nil {
+		return c.String(500, "failed to fetch work urls")
+	}
+	for _, url := range workUrls {
+		urlsMap[url.WorkID] = append(urlsMap[url.WorkID], workURLResponse{
+			ID:           *url.ID,
+			URL:          url.URL,
+			Label:        url.Label,
+			DisplayOrder: int(url.DisplayOrder),
+		})
+	}
+
+	workTechs, err := pSrv.q.IsirmtWorkTechStack.WithContext(ctx).Where(pSrv.q.IsirmtWorkTechStack.WorkID.In(workIDs...)).Order(pSrv.q.IsirmtWorkTechStack.WorkID, pSrv.q.IsirmtWorkTechStack.ID).Find()
+	if err != nil {
+		return c.String(500, "failed to fetch work tech stacks")
+	}
+	for _, tech := range workTechs {
+		techMap[tech.WorkID] = append(techMap[tech.WorkID], workTechStackResponse{
+			ID:          *tech.ID,
+			TechStackID: tech.TechStackID,
+		})
+	}
+
+	responses := make([]workResponse, 0, len(works))
+	for _, work := range works {
+		createdAt := ""
+		if work.CreatedAt != nil {
+			createdAt = work.CreatedAt.UTC().Format(time.RFC3339Nano)
+		}
+
+		workID := *work.ID
+		images := imagesMap[workID]
+		if images == nil {
+			images = []workImageResponse{}
+		}
+		urls := urlsMap[workID]
+		if urls == nil {
+			urls = []workURLResponse{}
+		}
+		techs := techMap[workID]
+		if techs == nil {
+			techs = []workTechStackResponse{}
+		}
+
+		responses = append(responses, workResponse{
+			ID:               workID,
+			Slug:             work.Slug,
+			Title:            work.Title,
+			Comment:          work.Comment,
+			CreatedAt:        createdAt,
+			AccentColor:      *work.AccentColor,
+			Description:      work.Description,
+			IsPublic:         work.IsPublic,
+			ThumbnailImageID: work.ThumbnailImageID,
+			Images:           images,
+			Urls:             urls,
+			TechStacks:       techs,
+		})
+	}
+
+	return c.JSON(http.StatusOK, responses)
 }
 
 func (pSrv *server) handleCreateWork(c echo.Context) error {
