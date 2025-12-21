@@ -33,11 +33,10 @@ export default function Footer() {
 
       const sketch = (p: p5) => {
         p.setup = () => {
-          const rect =
-            footerRef.current?.getBoundingClientRect() ?? {
-              width: 0,
-              height: 0,
-            };
+          const rect = footerRef.current?.getBoundingClientRect() ?? {
+            width: 0,
+            height: 0,
+          };
           canvasSizeRef.current.width = rect.width;
           canvasSizeRef.current.height = rect.height;
 
@@ -84,7 +83,7 @@ export default function Footer() {
       if (p5InstanceRef.current) {
         p5InstanceRef.current.resizeCanvas(
           canvasSizeRef.current.width,
-          canvasSizeRef.current.height
+          canvasSizeRef.current.height,
         );
         p5InstanceRef.current.background(...CANVAS_BG);
       }
@@ -107,10 +106,10 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer ref={footerRef} className="bg-[#67c8e6] -z-1 relative">
+    <footer ref={footerRef} className="relative -z-1 bg-[#67c8e6]">
       <div
         ref={sketchContainerRef}
-        className="w-full h-full -z-1 absolute top-0 left-0 pointer-events-none"
+        className="pointer-events-none absolute top-0 left-0 -z-1 h-full w-full"
       />
       <section className="flex flex-col items-center justify-center py-12">
         <div className={`text-4xl text-white ${delaGothicOne.className}`}>
