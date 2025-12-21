@@ -3,17 +3,34 @@
 import { useCallback, useEffect, useRef } from "react";
 import {
   colorQuadraticTimeBasedMapping,
-  vertex2DLinearTimeBasedMapping,
+  vertex2DCubicBezierTimeBasedMapping,
 } from "@/lib/sketch/timeBasedMapping";
 import { useTransitionState } from "./useTransitionState";
 import type { ColorRGB, Vertex2D } from "@/types/sketch/common";
+import { Snowflake } from "@/sketch/snowflake";
+
+const toNormalizedColor = (color: ColorRGB) =>
+  color.map((channel) => channel / 255) as [number, number, number];
 
 export type SpotlightSide = "left" | "right" | "none";
 
 const BG_IDLE: ColorRGB = [0x67, 0xc8, 0xe6];
 const BG_ACTIVE: ColorRGB = [0x3e, 0x52, 0x89];
 const SPOTLIGHT_COLOR: ColorRGB = [0xe7, 0xc1, 0x27];
-const TRANSITION_DURATION_MS = 150;
+
+const SNOWFLAKE_COUNT = 100;
+const SNOWFLAKE_SIZE_RANGE: [number, number] = [5, 12];
+const SNOWFLAKE_SPEED_RANGE: [number, number] = [25, 70];
+const SNOWFLAKE_ROTATION_SPEED_RANGE: [number, number] = [-40, 40];
+
+const SF_LINE: ColorRGB = [0xfa, 0xfa, 0xfa];
+const SF_LINE_NORMALIZED = toNormalizedColor(SF_LINE);
+const SNOWFLAKE_COLOR: [number, number, number, number] = [
+  SF_LINE_NORMALIZED[0],
+  SF_LINE_NORMALIZED[1],
+  SF_LINE_NORMALIZED[2],
+  0.85,
+];
 
 const VERTEX_SHADER_SOURCE = `#version 300 es
 in vec2 a_position;
@@ -52,9 +69,6 @@ const NORMALIZED_VERTICES: Record<SpotlightSide, Vertex2D[]> = {
   ],
 };
 
-const toNormalizedColor = (color: ColorRGB) =>
-  color.map((channel) => channel / 255) as [number, number, number];
-
 const SPOTLIGHT_COLOR_NORMALIZED = toNormalizedColor(SPOTLIGHT_COLOR);
 
 const convertVerticesToClipSpace = (
@@ -72,6 +86,7 @@ type WebGLResources = {
   gl: WebGL2RenderingContext;
   program: WebGLProgram;
   vertexBuffer: WebGLBuffer;
+  snowflakeBuffer: WebGLBuffer;
   positionLocation: number;
   colorLocation: WebGLUniformLocation | null;
   canvas: HTMLCanvasElement;
@@ -165,21 +180,32 @@ export function useSpotlightSketch() {
   const appliedSizeRef = useRef({ width: 0, height: 0 });
   const animationFrameRef = useRef<number | null>(null);
   const webglResourcesRef = useRef<WebGLResources | null>(null);
+  const snowflakesRef = useRef<Snowflake[]>([]);
 
   const vertexTransition = useTransitionState<Vertex2D[]>(
     createVertices("none", 0, 0),
     (from, to, progress) =>
       from.map((fromVertex, index) => {
         const target = to[index] ?? to[to.length - 1] ?? fromVertex;
-        return vertex2DLinearTimeBasedMapping(fromVertex, target, progress);
+        return vertex2DCubicBezierTimeBasedMapping(
+          fromVertex,
+          target,
+          progress,
+          {
+            x1: 0.34,
+            y1: 1.56,
+            x2: 0.64,
+            y2: 1,
+          },
+        );
       }),
-    TRANSITION_DURATION_MS,
+    300,
   );
 
   const colorTransition = useTransitionState<ColorRGB>(
     [...BG_IDLE],
     colorQuadraticTimeBasedMapping,
-    TRANSITION_DURATION_MS,
+    150,
   );
 
   useEffect(() => {
@@ -223,24 +249,24 @@ export function useSpotlightSketch() {
     }
 
     const vertexBuffer = gl.createBuffer();
-    if (!vertexBuffer) {
+    const snowflakeBuffer = gl.createBuffer();
+
+    if (!vertexBuffer || !snowflakeBuffer) {
+      if (vertexBuffer) {
+        gl.deleteBuffer(vertexBuffer);
+      }
+      if (snowflakeBuffer) {
+        gl.deleteBuffer(snowflakeBuffer);
+      }
       gl.deleteProgram(program);
       canvas.remove();
       canvasRef.current = null;
+      snowflakesRef.current = [];
       return () => {};
     }
 
     const positionLocation = gl.getAttribLocation(program, "a_position");
     const colorLocation = gl.getUniformLocation(program, "u_color");
-
-    webglResourcesRef.current = {
-      gl,
-      program,
-      vertexBuffer,
-      positionLocation,
-      colorLocation,
-      canvas,
-    };
 
     const rect = footerRef.current?.getBoundingClientRect() ?? {
       width: 0,
@@ -251,6 +277,27 @@ export function useSpotlightSketch() {
     canvas.width = initialWidth;
     canvas.height = initialHeight;
     appliedSizeRef.current = { width: initialWidth, height: initialHeight };
+
+    webglResourcesRef.current = {
+      gl,
+      program,
+      vertexBuffer,
+      snowflakeBuffer,
+      positionLocation,
+      colorLocation,
+      canvas,
+    };
+
+    snowflakesRef.current = Array.from(
+      { length: SNOWFLAKE_COUNT },
+      () =>
+        new Snowflake(gl, snowflakeBuffer, {
+          bounds: { width: initialWidth, height: initialHeight },
+          sizeRange: SNOWFLAKE_SIZE_RANGE,
+          speedRange: SNOWFLAKE_SPEED_RANGE,
+          rotationSpeedRange: SNOWFLAKE_ROTATION_SPEED_RANGE,
+        }),
+    );
 
     vertexTransition.jumpTo(
       createVertices("none", initialWidth, initialHeight),
@@ -301,10 +348,9 @@ export function useSpotlightSketch() {
         };
       }
 
-      const interpolatedVertices = vertexTransition.step(
-        Math.max(0, deltaTime),
-      );
-      const interpolatedColor = colorTransition.step(Math.max(0, deltaTime));
+      const safeDelta = Math.max(0, deltaTime);
+      const interpolatedVertices = vertexTransition.step(safeDelta);
+      const interpolatedColor = colorTransition.step(safeDelta);
       const isAnimating =
         vertexTransition.getProgress() < 1 || colorTransition.getProgress() < 1;
 
@@ -317,11 +363,15 @@ export function useSpotlightSketch() {
       );
       currentGl.clear(currentGl.COLOR_BUFFER_BIT);
 
-      if (
+      currentGl.useProgram(resources.program);
+      currentGl.enableVertexAttribArray(resources.positionLocation);
+
+      const shouldRenderSpotlight =
         (targetSide !== "none" || isAnimating) &&
         currentCanvas.width > 0 &&
-        currentCanvas.height > 0
-      ) {
+        currentCanvas.height > 0;
+
+      if (shouldRenderSpotlight) {
         const vertices = convertVerticesToClipSpace(
           interpolatedVertices,
           currentCanvas.width,
@@ -335,8 +385,6 @@ export function useSpotlightSketch() {
           currentGl.STREAM_DRAW,
         );
 
-        currentGl.useProgram(resources.program);
-        currentGl.enableVertexAttribArray(resources.positionLocation);
         currentGl.vertexAttribPointer(
           resources.positionLocation,
           2,
@@ -362,6 +410,26 @@ export function useSpotlightSketch() {
         );
       }
 
+      const snowflakes = snowflakesRef.current;
+      if (
+        snowflakes.length > 0 &&
+        currentCanvas.width > 0 &&
+        currentCanvas.height > 0
+      ) {
+        const bounds = {
+          width: currentCanvas.width,
+          height: currentCanvas.height,
+        };
+        snowflakes.forEach((flake) => {
+          flake.update(safeDelta, bounds);
+          flake.render({
+            positionLocation: resources.positionLocation,
+            colorLocation: resources.colorLocation,
+            color: SNOWFLAKE_COLOR,
+          });
+        });
+      }
+
       animationFrameRef.current = requestAnimationFrame(render);
     };
 
@@ -379,9 +447,11 @@ export function useSpotlightSketch() {
       const resources = webglResourcesRef.current;
       if (resources) {
         resources.gl.deleteBuffer(resources.vertexBuffer);
+        resources.gl.deleteBuffer(resources.snowflakeBuffer);
         resources.gl.deleteProgram(resources.program);
       }
       webglResourcesRef.current = null;
+      snowflakesRef.current = [];
       if (canvasRef.current) {
         canvasRef.current.remove();
         canvasRef.current = null;
@@ -409,6 +479,9 @@ export function useSpotlightSketch() {
       if (resources) {
         resources.gl.viewport(0, 0, nextWidth, nextHeight);
       }
+
+      const bounds = { width: nextWidth, height: nextHeight };
+      snowflakesRef.current.forEach((flake) => flake.update(0, bounds));
     };
 
     const rect = footerElement.getBoundingClientRect();

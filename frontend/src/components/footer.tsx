@@ -25,7 +25,7 @@ export default function Footer() {
           </div>
           <div className="my-10 flex gap-0 text-white">
             <div
-              className="pr-6"
+              className="pr-10"
               onMouseEnter={() => handleSpotlightEnter("left")}
               onMouseLeave={handleSpotlightLeave}
               onFocus={() => handleSpotlightEnter("left")}
@@ -40,7 +40,7 @@ export default function Footer() {
               />
             </div>
             <div
-              className="pl-6"
+              className="pl-10"
               onMouseEnter={() => handleSpotlightEnter("right")}
               onMouseLeave={handleSpotlightLeave}
               onFocus={() => handleSpotlightEnter("right")}
