@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -148,11 +147,13 @@ func main() {
 	epImages := router.Group("/images")
 	epImages.GET("", pSrv.handleGetImages)
 	epImages.POST("", pSrv.requireAdmin(pSrv.handleUploadImage))
-	epImages.GET("/:id", pSrv.handleServeImage)
+	epImages.GET("/:id", pSrv.handleGetImage)
+	epImages.GET("/:id/raw", pSrv.handleServeImage)
 	epImages.DELETE("/:id", pSrv.requireAdmin(pSrv.handleDeleteImage))
 	epImages.PUT("/:id", pSrv.requireAdmin(pSrv.handleUpdateImage))
 	epTechStacks := router.Group("/tech-stacks")
 	epTechStacks.GET("", pSrv.handleGetTechStacks)
+	epTechStacks.GET("/:id", pSrv.handleGetTechStack)
 	epTechStacks.POST("", pSrv.requireAdmin(pSrv.handleCreateTechStack))
 	epWorks := router.Group("/works")
 	epWorks.GET("", pSrv.handleGetWorks)
@@ -186,6 +187,24 @@ func (pSrv *server) handleGetImages(c echo.Context) error {
 		return c.String(500, "internal server error")
 	}
 	return c.JSON(200, images)
+}
+
+func (pSrv *server) handleGetImage(c echo.Context) error {
+	imageID := c.Param("id")
+	if imageID == "" {
+		return c.String(400, "image id is required")
+	}
+
+	ctx := c.Request().Context()
+	image, err := pSrv.fetchImageByID(ctx, imageID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.String(404, "image not found")
+		}
+		return c.String(500, "failed to fetch image")
+	}
+
+	return c.JSON(200, image)
 }
 
 func (pSrv *server) handleUploadImage(c echo.Context) error {
@@ -245,10 +264,9 @@ func (pSrv *server) handleServeImage(c echo.Context) error {
 	if imageID == "" {
 		return c.String(400, "image id is required")
 	}
-	fmt.Println("Serving image ID:", imageID)
 
 	ctx := c.Request().Context()
-	image, err := pSrv.q.CommonImage.WithContext(ctx).Where(pSrv.q.CommonImage.ID.Eq(imageID)).First()
+	image, err := pSrv.fetchImageByID(ctx, imageID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.String(404, "image not found")
@@ -256,6 +274,14 @@ func (pSrv *server) handleServeImage(c echo.Context) error {
 		return c.String(500, "failed to fetch image")
 	}
 
+	return pSrv.serveImageContent(c, image)
+}
+
+func (pSrv *server) fetchImageByID(ctx context.Context, imageID string) (*model.CommonImage, error) {
+	return pSrv.q.CommonImage.WithContext(ctx).Where(pSrv.q.CommonImage.ID.Eq(imageID)).First()
+}
+
+func (pSrv *server) serveImageContent(c echo.Context, image *model.CommonImage) error {
 	filePath := filepath.Join(pSrv.uploadDir, image.FilePath)
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -294,6 +320,24 @@ func (pSrv *server) handleGetTechStacks(c echo.Context) error {
 	}
 
 	return c.JSON(200, stacks)
+}
+
+func (pSrv *server) handleGetTechStack(c echo.Context) error {
+	stackID := c.Param("id")
+	if stackID == "" {
+		return c.String(400, "tech stack id is required")
+	}
+
+	ctx := c.Request().Context()
+	stack, err := pSrv.q.CommonTechStack.WithContext(ctx).Where(pSrv.q.CommonTechStack.ID.Eq(stackID)).First()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.String(404, "tech stack not found")
+		}
+		return c.String(500, "failed to fetch tech stack")
+	}
+
+	return c.JSON(200, stack)
 }
 
 func (pSrv *server) handleCreateTechStack(c echo.Context) error {

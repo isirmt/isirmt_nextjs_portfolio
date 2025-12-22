@@ -16,7 +16,7 @@ export default function ImagesViewer() {
         {images.map((image) => (
           <button className="relative size-48 bg-white" key={image.id}>
             <img
-              src={`/api/images/${image.id}`}
+              src={`/api/images/${image.id}/raw`}
               alt={image.file_name}
               className="size-full object-contain"
             />

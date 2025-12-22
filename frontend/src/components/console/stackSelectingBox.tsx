@@ -116,7 +116,7 @@ export default function StackSelectingBox({
               />
               {stack.logo_image_id ? (
                 <img
-                  src={`/api/images/${stack.logo_image_id}`}
+                  src={`/api/images/${stack.logo_image_id}/raw`}
                   alt={stack.name}
                   className="size-10 rounded object-contain"
                 />
