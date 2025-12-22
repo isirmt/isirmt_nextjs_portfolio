@@ -81,6 +81,7 @@ export default function WorksList() {
   const { ref: lineAnimationRef, isActive: isLineActive } =
     useInViewAnimation<HTMLDivElement>({
       delayMs: 150,
+      threshold: 0.3,
     });
 
   return (
