@@ -46,18 +46,29 @@ function WorkCard({ work }: { work: Work }) {
   );
 
   return (
-    <div className="relative flex flex-col items-center gap-3">
-      <div className="absolute -top-9 z-3 max-w-full rounded-xl bg-[#6354eb] px-3 py-1 text-white drop-shadow-sm drop-shadow-[#a39ed1] before:absolute before:top-0 before:left-[50%] before:-z-1 before:block before:translate-x-[-50%] before:translate-y-full before:border-[22px_10px_0px_10px] before:border-x-transparent before:border-t-[#6354eb] before:content-['']">
+    <div className="relative flex flex-col items-center gap-3 select-none">
+      <div className="pointer-events-none absolute -top-9 z-3 max-w-full rounded-xl bg-[#6354eb] px-3 py-1 text-white drop-shadow-sm drop-shadow-[#a39ed1] select-none before:absolute before:top-0 before:left-[50%] before:-z-1 before:block before:translate-x-[-50%] before:translate-y-full before:border-[22px_10px_0px_10px] before:border-x-transparent before:border-t-[#6354eb] before:content-['']">
         {work.comment}
       </div>
       <button className="group relative flex cursor-pointer items-center justify-center drop-shadow-2xl transition-all duration-150">
-        <div className="pointer-events-none absolute z-0 size-[95%] rotate-17 bg-[#94d5f3] transition-all duration-300 group-hover:rotate-107" />
+        <div className="ease-over pointer-events-none absolute z-0 size-[95%] rotate-17 bg-[#94d5f3] transition-all duration-300 group-hover:rotate-107" />
         <div className="relative z-2 flex aspect-square size-72 items-center justify-center overflow-hidden rounded bg-white">
           <img
             src={`/api/images/${work.thumbnail_image_id}/raw`}
-            className="size-72 object-cover"
+            className="pointer-events-none size-72 object-cover transition-all duration-200 ease-out group-hover:scale-110"
             alt={thumbnailAlt}
           />
+        </div>
+        <div className="pointer-events-none absolute top-0 left-0 z-3 size-full overflow-hidden rounded">
+          <div
+            className="absolute top-0 left-0 size-0 border-[1.5rem]"
+            style={{
+              borderColor: `${work.accent_color} transparent transparent ${work.accent_color}`,
+            }}
+          />
+          <div className="absolute bottom-0 -left-full flex w-full flex-col items-start rounded-tr-xl bg-[#6354eb] py-3 pr-6 pl-[20%] transition-all duration-400 ease-out group-hover:left-[-10%]">
+            <div className="text-xl font-black text-white">{work.title}</div>
+          </div>
         </div>
       </button>
       <div className="flex w-full justify-start gap-2">
