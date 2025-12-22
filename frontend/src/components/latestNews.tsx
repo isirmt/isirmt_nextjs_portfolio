@@ -86,7 +86,7 @@ export function InformationSite({
             src={siteImagePath}
             width={1200}
             height={630}
-            className="transition-all group-hover:scale-110 group-hover:opacity-50"
+            className="pointer-events-none transition-all group-hover:scale-110 group-hover:opacity-50"
             alt={siteName + "_thumbnail"}
           />
         </div>
