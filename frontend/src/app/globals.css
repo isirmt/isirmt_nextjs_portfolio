@@ -10,6 +10,20 @@
   --color-foreground: var(--foreground);
   --font-noto: var(--font-noto-sans);
   --font-dot: Pixelify Sans, DotGothic16;
+  --animate-jump: jump 1s cubic-bezier(0, 0.5, 0.02, 1.69) 1;
+}
+
+@keyframes jump {
+  0%,
+  100% {
+    transform: scale(100%);
+  }
+  25% {
+    transform: scale(50%);
+  }
+  50% {
+    transform: scale(110%);
+  }
 }
 
 @media (prefers-color-scheme: dark) {

@@ -10,22 +10,31 @@ export default function Footer() {
     sketchContainerRef,
     handleSpotlightEnter,
     handleSpotlightLeave,
+    getSpotlightSide,
   } = useSpotlightSketch();
 
   return (
-    <footer ref={footerRef} className="relative bg-[#67c8e6]">
+    <footer
+      ref={footerRef}
+      className="relative overflow-hidden bg-[#67c8e6] select-none"
+    >
+      <div className="absolute left-[10%] z-1 aspect-946/2472 h-full bg-[url('/footer_stripe.svg')] bg-center bg-no-repeat opacity-5 bg-blend-saturation" />
+      <div className="absolute left-[70%] z-1 aspect-946/2472 h-full bg-[url('/footer_stripe.svg')] bg-center bg-no-repeat opacity-12 bg-blend-saturation" />
+      <div className="absolute left-[90%] z-1 aspect-946/2472 h-full bg-[url('/footer_stripe.svg')] bg-center bg-no-repeat opacity-8 bg-blend-saturation" />
       <div
         ref={sketchContainerRef}
         className="pointer-events-none absolute top-0 left-0 z-0 h-full w-full"
       />
-      <div className="relative z-1">
+      <div className="relative z-2 flex flex-col items-center">
         <section className="flex flex-col items-center justify-center py-12">
-          <div className={`text-4xl text-white ${delaGothicOne.className}`}>
+          <div
+            className={`text-4xl text-white transition ${delaGothicOne.className} ${getSpotlightSide() !== "none" && "drop-shadow-2xl"}`}
+          >
             情報発信中サイト
           </div>
           <div className="my-10 flex gap-0 text-white">
             <div
-              className="pr-10"
+              className="pr-10 transition hover:drop-shadow-2xl"
               onMouseEnter={() => handleSpotlightEnter("left")}
               onMouseLeave={handleSpotlightLeave}
               onFocus={() => handleSpotlightEnter("left")}
@@ -40,7 +49,7 @@ export default function Footer() {
               />
             </div>
             <div
-              className="pl-10"
+              className="pl-10 transition hover:drop-shadow-2xl"
               onMouseEnter={() => handleSpotlightEnter("right")}
               onMouseLeave={handleSpotlightLeave}
               onFocus={() => handleSpotlightEnter("right")}
@@ -56,7 +65,21 @@ export default function Footer() {
             </div>
           </div>
         </section>
-        <div className="aspect-1235/110 bg-[url('/name_footer.svg')] bg-center bg-no-repeat" />
+        <div
+          className={`group relative flex w-full flex-col items-center ${getSpotlightSide() !== "none" && "drop-shadow-2xl"}`}
+        >
+          <div
+            className={`aspect-1233/110 w-full bg-[url('/name_footer.svg')] bg-center bg-no-repeat`}
+          />
+          <div
+            className={`group-hover:animate-jump absolute bottom-[calc(100vw*110/1233*0.7)] z-1 aspect-440/100 w-[7%] bg-[url('/glasses.png')] bg-contain bg-center bg-no-repeat ${getSpotlightSide() !== "none" && "animate-jump"}`}
+          />
+          <div
+            className={`absolute bottom-2 left-2 z-10 text-xs leading-none font-semibold text-black ${getSpotlightSide() !== "none" && "drop-shadow-2xl"}`}
+          >
+            © isirmt
+          </div>
+        </div>
       </div>
     </footer>
   );

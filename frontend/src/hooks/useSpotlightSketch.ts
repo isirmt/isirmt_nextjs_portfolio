@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   colorQuadraticTimeBasedMapping,
   vertex2DCubicBezierTimeBasedMapping,
@@ -176,6 +176,7 @@ export function useSpotlightSketch() {
   const sketchContainerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const spotlightTargetRef = useRef<SpotlightSide>("none");
+  const [spotlightSide, setSpotlightSide] = useState<SpotlightSide>("none");
   const activeSpotlightRef = useRef<SpotlightSide>("none");
   const appliedSizeRef = useRef({ width: 0, height: 0 });
   const animationFrameRef = useRef<number | null>(null);
@@ -502,16 +503,23 @@ export function useSpotlightSketch() {
 
   const handleSpotlightEnter = useCallback((side: SpotlightSide) => {
     spotlightTargetRef.current = side;
+    setSpotlightSide(side);
   }, []);
 
   const handleSpotlightLeave = useCallback(() => {
     spotlightTargetRef.current = "none";
+    setSpotlightSide("none");
   }, []);
+
+  const getSpotlightSide = useCallback(() => {
+    return spotlightSide;
+  }, [spotlightSide]);
 
   return {
     footerRef,
     sketchContainerRef,
     handleSpotlightEnter,
     handleSpotlightLeave,
+    getSpotlightSide,
   };
 }
