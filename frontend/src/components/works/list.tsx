@@ -57,12 +57,12 @@ function WorkCard({ work }: { work: Work }) {
   const randomDelayMs = useMemo(() => delayFromId(work.id), [work.id]);
   const { ref: cardBackAnimationRef, isActive: isCardBackActive } =
     useInViewAnimation<HTMLDivElement>({
-      threshold: 0.25,
+      threshold: 0.15,
       delayMs: randomDelayMs,
     });
   const { ref: cardFrontAnimationRef, isActive: isCardFrontActive } =
     useInViewAnimation<HTMLDivElement>({
-      threshold: 0.25,
+      threshold: 0.15,
       delayMs: randomDelayMs,
     });
   const imageInfo = useMemo(
@@ -89,6 +89,9 @@ function WorkCard({ work }: { work: Work }) {
     () => imageInfo?.file_name ?? `${work.title}のサムネイル`,
     [imageInfo, work.title],
   );
+  const createdYear = useMemo(() => {
+    return new Date(work.created_at).getFullYear();
+  }, [work.created_at]);
 
   return (
     <div className="relative flex flex-col items-center gap-3 select-none">
@@ -97,23 +100,26 @@ function WorkCard({ work }: { work: Work }) {
       </div>
       <button className="group relative flex cursor-pointer items-center justify-center drop-shadow-2xl transition-all duration-150">
         <div className="ease-over pointer-events-none absolute z-0 size-[95%] rotate-17 bg-[#94d5f3] transition-all duration-300 group-hover:rotate-107" />
-        <div className="relative z-2 flex aspect-square size-72 items-center justify-center overflow-hidden rounded bg-white">
+        <div className="relative z-2 flex aspect-square size-72 items-center justify-center overflow-hidden rounded-xl bg-white">
           <img
             src={`/api/images/${work.thumbnail_image_id}/raw`}
             className="pointer-events-none size-72 object-cover transition-all duration-200 ease-out group-hover:scale-110"
             alt={thumbnailAlt}
           />
         </div>
-        <div className="pointer-events-none absolute top-0 left-0 z-3 size-full overflow-hidden rounded">
+        <div className="pointer-events-none absolute top-0 left-0 z-3 size-full overflow-hidden rounded-xl">
           <div
-            className="absolute top-0 left-0 size-0 border-[1.5rem]"
+            className="absolute top-0 left-0 size-0 border-[1.5rem] transition-all duration-150 group-hover:border-[1.75rem]"
             style={{
               borderColor: `${work.accent_color} transparent transparent ${work.accent_color}`,
             }}
           />
-          <div className="absolute bottom-0 -left-full flex w-full flex-col items-start rounded-tr-xl bg-[#6354eb] py-3 pr-6 pl-[20%] transition-all duration-400 ease-out group-hover:left-[-10%]">
+          {/* title */}
+          <div className="absolute top-0 left-0 flex size-full flex-col-reverse items-start p-3 [background:linear-gradient(to_bottom,rgba(0,0,0,0.1)_65%,rgba(0,0,0,0.7))]">
+            <div className="text-xs font-black text-white">{createdYear}年</div>
             <div className="text-xl font-black text-white">{work.title}</div>
           </div>
+          {/* in-view */}
           <div
             ref={cardBackAnimationRef}
             className={`animate-iv-out-down absolute top-0 left-0 z-4 size-full bg-[#6354eb] ${isCardBackActive ? "is-active" : ""}`}
