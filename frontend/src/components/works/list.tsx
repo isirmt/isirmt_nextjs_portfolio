@@ -19,7 +19,7 @@ function SectionText() {
   return (
     <div
       ref={lineAnimationRef}
-      className="relative mt-10 mb-30 drop-shadow-2xl drop-shadow-[#a9e4e4]"
+      className="relative mt-10 flex items-center flex-col gap-4 mb-30 drop-shadow-2xl drop-shadow-[#a9e4e4]"
     >
       <svg
         className={`animate-iv-line w-96 ${isLineActive ? "is-active" : ""}`}
@@ -208,6 +208,7 @@ function SectionText() {
           style={lineStyle(11)}
         />
       </svg>
+      <div className="select-none text-[#777]">中学校時代の制作物も添えて───</div>
     </div>
   );
 }
