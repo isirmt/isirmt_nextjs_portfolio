@@ -307,7 +307,7 @@ function WorkCard({ work }: { work: Work }) {
         <div className="relative z-2 flex aspect-square size-72 items-center justify-center overflow-hidden rounded-xl bg-white">
           <img
             src={`/api/images/${work.thumbnail_image_id}/raw`}
-            className="pointer-events-none size-72 object-cover transition-all duration-200 ease-out group-hover:scale-110"
+            className="pointer-events-none size-72 object-cover transition-all duration-200 ease-out group-hover:scale-110 group-hover:skew-x-1 group-hover:brightness-110"
             alt={thumbnailAlt}
           />
         </div>
@@ -336,14 +336,14 @@ function WorkCard({ work }: { work: Work }) {
       </button>
       <div className="flex w-full justify-start gap-2">
         {techsInfo.map((stack, techIdx) => (
-          <button
+          <div
             key={techIdx}
-            className={`hover:translate-0.5"} relative flex scale-y-110 cursor-pointer items-center gap-3 overflow-hidden bg-[#2a7186] px-2 py-px tracking-[.1rem] shadow-[.125rem_.125rem_0_0_#67c8e6] transition-all duration-150 hover:shadow-[0rem_0rem_0_0_#67c8e6]`}
+            className={`hover:translate-0.5"} relative flex scale-y-110 items-center gap-3 overflow-hidden bg-[#2a7186] px-2 py-px tracking-[.1rem] shadow-[.125rem_.125rem_0_0_#67c8e6] transition-all duration-150`}
           >
             <span className="font-dot text-lg leading-none text-[#98e3fa]">
               {stack.name}
             </span>
-          </button>
+          </div>
         ))}
       </div>
     </div>
