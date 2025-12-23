@@ -331,7 +331,7 @@ function WorkCard({
         className={`group relative flex cursor-pointer items-center justify-center drop-shadow-2xl transition-all duration-100 ${isSelected ? "scale-110" : ""}`}
       >
         <div
-          className={`pointer-events-none absolute z-0 size-[95%] bg-[#94d5f3] transition-all duration-300 ${isSelected ? "-rotate-377 delay-200 ease-linear" : "ease-over rotate-17 group-hover:rotate-107"}`}
+          className={`pointer-events-none absolute z-0 size-[95%] bg-[#94d5f3] transition-all duration-300 ${isSelected ? "-rotate-360 delay-200 ease-linear" : "ease-over rotate-17 group-hover:rotate-107"}`}
         />
         <div
           className={`relative z-2 flex aspect-square size-72 items-center justify-center overflow-hidden bg-white transition-all ${isSelected ? "rounded-3xl" : "rounded-xl"}`}
@@ -464,7 +464,9 @@ export default function WorksList() {
         className={`fixed top-0 left-0 z-100 size-full transition-opacity ${selectingWorkId ? "pointer-events-auto bg-[#eee]/70 opacity-100 backdrop-blur-md backdrop-saturate-50 delay-450" : "pointer-events-none opacity-0 backdrop-blur-none delay-0"}`}
       >
         <div className="pointer-events-none fixed top-0 left-0 z-1 size-full bg-[linear-gradient(to_bottom,transparent_calc(100dvh-250px),rgba(255,255,255,1))]" />
-        <div className="size-full overflow-y-auto overscroll-contain">
+        <div
+          className={`size-full ${selectingWorkId ? "overflow-y-scroll overscroll-contain" : "overflow-y-hidden"}`}
+        >
           <div className="relative min-h-full">
             <div className="pointer-events-none absolute top-0 left-0 z-0 size-full bg-[url('/noise_color_128.png')] opacity-20 mix-blend-multiply" />
             <div className="absolute top-26 left-0 h-0 w-full border-b border-[#555]" />
