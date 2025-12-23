@@ -463,7 +463,10 @@ export default function WorksList() {
       <div
         className={`fixed top-0 left-0 z-100 size-full transition-opacity ${selectingWorkId ? "pointer-events-auto bg-[#eee]/70 opacity-100 backdrop-blur-md backdrop-saturate-50 delay-450" : "pointer-events-none opacity-0 backdrop-blur-none delay-0"}`}
       >
-        <div className="pointer-events-none fixed top-0 left-0 z-1 size-full bg-[linear-gradient(to_bottom,transparent_calc(100dvh-250px),rgba(255,255,255,1))]" />
+        <div
+          className="pointer-events-none fixed top-0 left-0 z-1 h-full bg-[linear-gradient(to_bottom,transparent_calc(100dvh-250px),rgba(255,255,255,1))]"
+          style={{ right: "var(--scrollbar-width, 0px)" }}
+        />
         <div
           className={`size-full ${selectingWorkId ? "overflow-y-scroll overscroll-contain" : "overflow-y-hidden"}`}
         >
