@@ -311,9 +311,6 @@ function WorkCard({
     () => imageInfo?.file_name ?? `${work.title}のサムネイル`,
     [imageInfo, work.title],
   );
-  const createdYear = useMemo(() => {
-    return new Date(work.created_at).getFullYear();
-  }, [work.created_at]);
   const isSelected = selectingId === work.id;
 
   return (
@@ -331,7 +328,7 @@ function WorkCard({
         className={`group relative flex cursor-pointer items-center justify-center drop-shadow-2xl transition-all duration-100 ${isSelected ? "scale-110" : ""}`}
       >
         <div
-          className={`pointer-events-none absolute z-0 size-[95%] bg-[#94d5f3] transition-all duration-300 ${isSelected ? "-rotate-360 delay-200 ease-linear" : "ease-over rotate-17 group-hover:rotate-107"}`}
+          className={`pointer-events-none absolute z-0 size-[95%] bg-[#94d5f3] transition-all duration-300 ${isSelected ? "-rotate-360 delay-200 ease-linear" : "ease-over rotate-17"}`}
         />
         <div
           className={`relative z-2 flex aspect-square size-72 items-center justify-center overflow-hidden bg-white transition-all ${isSelected ? "rounded-3xl" : "rounded-xl"}`}
@@ -346,16 +343,11 @@ function WorkCard({
           className={`pointer-events-none absolute top-0 left-0 z-3 size-full overflow-hidden transition-all ${isSelected ? "rounded-3xl" : "rounded-xl"}`}
         >
           <div
-            className="absolute top-0 left-0 size-0 border-[1.5rem] transition-all duration-150 group-hover:border-[1.75rem]"
+            className="absolute top-0 left-0 size-0 border-[1.5rem] transition-all duration-150"
             style={{
               borderColor: `${work.accent_color} transparent transparent ${work.accent_color}`,
             }}
           />
-          {/* title */}
-          <div className="absolute top-0 left-0 flex size-full flex-col-reverse items-start p-3 [background:linear-gradient(to_bottom,rgba(0,0,0,0.1)_65%,rgba(0,0,0,0.7))]">
-            <div className="text-xs font-black text-white">{createdYear}年</div>
-            <div className="text-xl font-black text-white">{work.title}</div>
-          </div>
           {/* in-view */}
           <div
             ref={cardBackAnimationRef}
@@ -467,6 +459,7 @@ export default function WorksList() {
           className="pointer-events-none fixed top-0 left-0 z-1 h-full bg-[linear-gradient(to_bottom,transparent_calc(100dvh-250px),rgba(255,255,255,1))]"
           style={{ right: "var(--scrollbar-width, 0px)" }}
         />
+        <div className="animate-spin-reverse fixed bottom-10 left-6 size-34 bg-[url('/windmill.svg')] opacity-50 [animation-duration:10s]" />
         <div
           className={`size-full ${selectingWorkId ? "overflow-y-scroll overscroll-contain" : "overflow-y-hidden"}`}
         >
