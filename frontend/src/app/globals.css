@@ -57,6 +57,23 @@
   }
 }
 
+@keyframes iv-fade-tracking {
+  0% {
+    opacity: 0;
+    letter-spacing: 1.5rem;
+    transform: translateY(-1rem);
+  }
+  70% {
+    opacity: 1;
+    letter-spacing: 0.1rem;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    letter-spacing: 100rem;
+  }
+}
+
 .animate-iv-line line,
 .animate-iv-line path {
   stroke-dasharray: var(--work-line-length, 2000);
@@ -71,6 +88,15 @@
   animation-delay: calc(
     var(--work-line-index, 0) * var(--work-line-stagger, 0.12s)
   );
+}
+
+.animate-iv-fade-tracking {
+  white-space: nowrap;
+  opacity: 0;
+}
+
+.animate-iv-fade-tracking.is-active {
+  animation: iv-fade-tracking 2s ease-out forwards;
 }
 
 .animate-iv-out-down {

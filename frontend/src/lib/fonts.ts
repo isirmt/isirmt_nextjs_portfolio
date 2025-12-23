@@ -5,6 +5,7 @@ import {
   Pixelify_Sans,
   DotGothic16,
   Dela_Gothic_One,
+  Smooch_Sans,
 } from "next/font/google";
 
 // 既定のフォント
@@ -34,6 +35,11 @@ export const dotGothic16 = DotGothic16({
 });
 
 export const delaGothicOne = Dela_Gothic_One({
+  weight: ["400"],
+  subsets: ["latin"],
+});
+
+export const smoochSans = Smooch_Sans({
   weight: ["400"],
   subsets: ["latin"],
 });
