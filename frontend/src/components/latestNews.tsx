@@ -56,7 +56,9 @@ export function LatestNews({ feedUrl }: Options) {
   return (
     <div className="">
       {feedData?.title ? (
-        <Link href={feedData.link}>{feedData.title}</Link>
+        <Link className="hover:border-b" href={feedData.link}>
+          {feedData.title}
+        </Link>
       ) : (
         <div>データ取得に失敗しました&nbsp;&gt;&lt;</div>
       )}
@@ -77,13 +79,14 @@ export function InformationSite({
         href={siteUrl}
         target="_blank"
         rel="noopener"
-        className="flex flex-col gap-2.5"
+        className="group flex flex-col gap-2.5"
       >
-        <div className="aspect-1200/630 w-96 overflow-hidden rounded-lg">
+        <div className="aspect-1200/630 w-96 overflow-hidden rounded-lg bg-white">
           <Image
             src={siteImagePath}
             width={1200}
             height={630}
+            className="pointer-events-none transition-all group-hover:scale-110 group-hover:opacity-50"
             alt={siteName + "_thumbnail"}
           />
         </div>

@@ -30,7 +30,8 @@ export function WorksProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await fetch("/api/works");
       if (!response.ok) {
-        const message = (await response.text()) || "作品一覧の取得に失敗しました";
+        const message =
+          (await response.text()) || "作品一覧の取得に失敗しました";
         throw new Error(message);
       }
       const parsedWorks = (await response.json()) as Work[];

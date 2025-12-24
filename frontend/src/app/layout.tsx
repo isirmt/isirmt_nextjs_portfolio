@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { notoSansJp } from "@/lib/fonts";
+import ScrollbarWidthSetter from "@/components/scrollbarWidthSetter";
 
 export const metadata: Metadata = {
   title: "isirmt(入本 聖也)",
@@ -17,7 +18,10 @@ export default function RootLayout({
       <head>
         <meta name="application-name" content="Folims" />
       </head>
-      <body className={`${notoSansJp.variable} antialiased`}>{children}</body>
+      <body className={`${notoSansJp.variable} antialiased`}>
+        <ScrollbarWidthSetter />
+        {children}
+      </body>
     </html>
   );
 }
