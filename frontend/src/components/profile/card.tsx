@@ -4,6 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
+const ORBIT_COUNT = 20;
+const ORBIT_DURATION = 60;
+
 type ProfileCardProps = {
   age: number;
 };
@@ -76,15 +79,24 @@ export default function ProfileCard({ age }: ProfileCardProps) {
 
   return (
     <div className="relative mt-32 w-fit">
-      {orbit && (
-        <span
-          className="animate-orbit pointer-events-none absolute top-0 left-0 z-0 h-12 w-2 rounded-md bg-[#f7885c] opacity-50 [offset-anchor:0_5rem] [offset-rotate:auto]"
-          style={orbitStyle}
-        />
-      )}
+      {orbit &&
+        Array.from({ length: ORBIT_COUNT }).map((_, orbitIndex) => {
+          const delay = -(ORBIT_DURATION * (orbitIndex / ORBIT_COUNT));
+          return (
+            <span
+              key={orbitIndex}
+              className="animate-orbit pointer-events-none absolute top-0 left-0 z-0 h-8 w-2 rounded-md bg-[#f7885c] opacity-20 [offset-anchor:0_4rem] [offset-rotate:auto]"
+              style={{
+                ...orbitStyle,
+                animationDelay: `${delay}s`,
+                animationDuration: `${ORBIT_DURATION}s`,
+              }}
+            />
+          );
+        })}
       <div
         ref={cardRef}
-        className="relative z-10 w-fit rounded-tr-[5rem] bg-[#ffe7bb] [box-shadow:.5rem_.5rem_0_0_#f7885c]"
+        className="relative z-10 w-fit rounded-tr-[5rem] rounded-br-3xl bg-[#ffe7bb] [box-shadow:0_.75rem_0_0_#f7885c]"
       >
         <div className="font-dot absolute -top-10 left-24 flex flex-col items-center justify-center">
           <div className="text-6xl leading-none tracking-wider">入本聖也</div>
@@ -176,7 +188,7 @@ export default function ProfileCard({ age }: ProfileCardProps) {
               <Image
                 src="/x_logo.png"
                 alt="X logo"
-                className="pointer-events-none"
+                className="pointer-events-none select-none"
                 width={18}
                 height={18}
               />
@@ -190,7 +202,7 @@ export default function ProfileCard({ age }: ProfileCardProps) {
               <Image
                 src="/github_logo.png"
                 alt="GitHub logo"
-                className="pointer-events-none"
+                className="pointer-events-none select-none"
                 width={26}
                 height={26}
               />
