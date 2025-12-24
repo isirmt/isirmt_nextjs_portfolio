@@ -155,7 +155,7 @@ export default function SelectedDetailScreen({
             >
               <div className="h-0 grow border-b border-[#aaa] transition-all"></div>
               <div
-                className={`shrink-0 px-10 text-6xl leading-none tracking-wider transition-all group-hover:px-0 ${smoochSans.className}`}
+                className={`shrink-0 px-10 text-6xl leading-none tracking-wider transition-all select-none group-hover:px-0 ${smoochSans.className}`}
               >
                 CLOSE
               </div>
