@@ -2,8 +2,8 @@ services:
   web:
     image: ghcr.io/isirmt/isirmt_nextjs_portfolio-web:0.0.1
     build:
-      context: .
-      dockerfile: ./frontend/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
 
   backend:
     image: ghcr.io/isirmt/isirmt_nextjs_portfolio-backend:0.0.1
