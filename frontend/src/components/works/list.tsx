@@ -109,7 +109,7 @@ function WorkCard({
           />
         </div>
       </button>
-      <div className="flex w-full justify-start gap-2">
+      <div className="flex w-76 flex-wrap justify-start gap-3">
         {techsInfo.map((stack, techIdx) => (
           <div
             key={techIdx}
