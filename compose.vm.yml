@@ -16,9 +16,7 @@ services:
     restart: unless-stopped
 
   web:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: ghcr.io/isirmt/isirmt_nextjs_portfolio-web:latest
     environment:
       NODE_ENV: production
       PORT: "3000"
@@ -36,9 +34,7 @@ services:
     restart: unless-stopped
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ghcr.io/isirmt/isirmt_nextjs_portfolio-backend:latest
     environment:
       DATABASE_URL: ${DATABASE_URL}
       ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
