@@ -146,7 +146,6 @@ func main() {
 	epImages.GET("/:id", pSrv.handleGetImage)
 	epImages.GET("/:id/raw", pSrv.handleServeImage)
 	epImages.DELETE("/:id", pSrv.requireAdmin(pSrv.handleDeleteImage))
-	epImages.PUT("/:id", pSrv.requireAdmin(pSrv.handleUpdateImage))
 	epTechStacks := router.Group("/tech-stacks")
 	epTechStacks.GET("", pSrv.handleGetTechStacks)
 	epTechStacks.GET("/:id", pSrv.handleGetTechStack)
@@ -303,10 +302,27 @@ func (pSrv *server) serveImageContent(c echo.Context, image *model.CommonImage) 
 }
 
 func (pSrv *server) handleDeleteImage(c echo.Context) error {
-	return c.String(200, "ok")
-}
+	imageID := strings.TrimSpace(c.Param("id"))
+	if imageID == "" {
+		return c.String(400, "image id is required")
+	}
 
-func (pSrv *server) handleUpdateImage(c echo.Context) error {
+	ctx := c.Request().Context()
+	if _, err := pSrv.q.CommonImage.WithContext(ctx).Where(pSrv.q.CommonImage.ID.Eq(imageID)).First(); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.String(404, "image not found")
+		}
+		return c.String(500, "failed to fetch image")
+	}
+
+	if err := pSrv.q.Transaction(func(tx *query.Query) error {
+		if _, err := tx.CommonImage.WithContext(ctx).Where(tx.CommonImage.ID.Eq(imageID)).Delete(); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return c.String(500, "failed to delete image")
+	}
 	return c.String(200, "ok")
 }
 
@@ -851,15 +867,6 @@ func (pSrv *server) handleDeleteWork(c echo.Context) error {
 	}
 
 	if err := pSrv.q.Transaction(func(tx *query.Query) error {
-		if _, err := tx.IsirmtWorkImage.WithContext(ctx).Where(tx.IsirmtWorkImage.WorkID.Eq(workID)).Delete(); err != nil {
-			return err
-		}
-		if _, err := tx.IsirmtWorkURL.WithContext(ctx).Where(tx.IsirmtWorkURL.WorkID.Eq(workID)).Delete(); err != nil {
-			return err
-		}
-		if _, err := tx.IsirmtWorkTechStack.WithContext(ctx).Where(tx.IsirmtWorkTechStack.WorkID.Eq(workID)).Delete(); err != nil {
-			return err
-		}
 		if _, err := tx.IsirmtWork.WithContext(ctx).Where(tx.IsirmtWork.ID.Eq(workID)).Delete(); err != nil {
 			return err
 		}
