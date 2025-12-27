@@ -11,6 +11,7 @@ import { smoochSans } from "@/lib/fonts";
 import { SectionText } from "./sectionText";
 import { CloudLarge, CloudSmall } from "./clouds";
 import SelectedDetailScreen from "./selectedDetailScreen";
+import MarqueeText from "../marqueeText";
 
 const delayFromId = (id: string, maxDelay = 500) => {
   let hash = 0;
@@ -70,8 +71,8 @@ function WorkCard({
         transitionDelay: `${randomSelectingDelayMs}ms`,
       }}
     >
-      <div className="pointer-events-none absolute -top-9 z-3 max-w-full rounded-xl bg-[#6354eb] px-3 py-1 text-white drop-shadow-sm drop-shadow-[#a39ed1] select-none before:absolute before:top-0 before:left-[50%] before:-z-1 before:block before:translate-x-[-50%] before:translate-y-full before:border-[22px_10px_0px_10px] before:border-x-transparent before:border-t-[#6354eb] before:content-['']">
-        {work.comment}
+      <div className="pointer-events-none absolute -top-9 z-3 max-w-full rounded-xl bg-[#6354eb] px-3 py-1 text-sm whitespace-nowrap text-white drop-shadow-sm drop-shadow-[#a39ed1] select-none before:absolute before:top-0 before:left-[50%] before:-z-1 before:block before:translate-x-[-50%] before:translate-y-full before:border-[22px_10px_0px_10px] before:border-x-transparent before:border-t-[#6354eb] before:content-['']">
+        <MarqueeText text={work.comment} />
       </div>
       <button
         onClick={() => selectingFunc(isSelected ? undefined : work.id)}
